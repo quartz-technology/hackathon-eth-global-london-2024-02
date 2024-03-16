@@ -1,9 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {Organisation} from "../../Types/organisation";
+import { CreateUserResponse } from 'src/Types/userType';
 
 export interface UserClientInterface {
 	organisation?: Organisation
 	loading: boolean; // Is the context loaded
+	userResponse?: CreateUserResponse;
+	setUserResponse?: Dispatch<SetStateAction<CreateUserResponse | undefined>>;
 
 	setOrganisation?:  Dispatch<SetStateAction<Organisation | undefined>>;
 }
@@ -15,6 +18,7 @@ const userInitialState: UserClientInterface = {
 const UseUserClient = () => {
 	const [loading, setLoading] = useState<boolean>(userInitialState.loading);
 	const [organisation, setOrganisation] = useState<Organisation | undefined>();
+	const [userResponse, setUserResponse] = useState<CreateUserResponse | undefined>();
 
 	/**
 	 * Init the application
@@ -27,7 +31,9 @@ const UseUserClient = () => {
 	return {
 		loading,
 		organisation,
-		setOrganisation
+		setOrganisation,
+		userResponse,
+		setUserResponse
 	} as UserClientInterface;
 };
 

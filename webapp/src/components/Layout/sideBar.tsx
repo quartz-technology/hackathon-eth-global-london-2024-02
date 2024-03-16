@@ -8,7 +8,8 @@ const mylogo = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuHBOvXVQS
 
 const navigation = [{ name: 'Dashboard', href: '/', icon: HomeIcon }];
 
-const teams = [{ name: 'Create Organisation', href: '/org', initial: 'C' }];
+const teams = [{ name: 'Create Organisation', href: '/org', initial: 'C' },
+			   { name: 'Create User', href: '/user', initial: 'U' }];
 
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(' ');
@@ -20,22 +21,25 @@ type SideBarProps = {
 };
 
 const LowerSection = () => {
-	return (
-		<li className="-mx-6 mt-auto">
-			<a
-				href="#"
-				className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50"
-			>
-				<img
-					className="h-8 w-8 rounded-2xl bg-gray-50"
-					src="https://cdn-icons-png.flaticon.com/512/2761/2761035.png"
-					alt=""
-				/>
-				<span aria-hidden="true">Connect wallet</span>
-			</a>
-		</li>
-	);
+    return (
+        <li className="-mx-6 mt-auto flex justify-between items-center px-6 py-3">
+            <input
+                type="text"
+                placeholder="Enter username"
+                className="text-sm font-semibold leading-6 text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                aria-label="Username"
+            />
+            <button
+                type="submit"
+                className="ml-4 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-sm font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+            >
+                Connect
+            </button>
+        </li>
+    );
 };
+
+
 
 const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 	const router = useRouter();
