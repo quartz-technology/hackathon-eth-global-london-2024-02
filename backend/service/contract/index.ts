@@ -4,17 +4,25 @@ import { v4 as uuidv4 } from "uuid";
 
 import { CircleAPIBaseURL } from "@service/circle/constants";
 
-interface ExecuteOptions {
-  walletID: string;
-  userToken: string;
+interface ContractCaller {
+  walletID: string
+  userToken: string
+}
+
+type ExecuteOptions = {
   ABIFunctionSignature: string;
-  ABIParameters: string[];
+  ABIParameters: any[];
 }
 
 interface OwnContractOptions {
-  walletID: string;
-  userToken: string;
   walletAddress: string;
+}
+
+interface CreateGroupOptions {
+  members: string[]
+  groupAddress: string;
+  allocation: number;
+  delays: number;
 }
 
 const CONTRACT_ADDRESS = "0x5c1A58163829C0036D0c3e68A7EA155E092683cf";
@@ -26,20 +34,20 @@ export default class ContractSDK {
     this.apiKey = apiKey;
   }
 
-  async execute(opts: ExecuteOptions) {
+  async execute(caller: ContractCaller, opts: ExecuteOptions) {
     const url = `${CircleAPIBaseURL}/transactions/contractExecution`;
     const options = {
       method: "POST",
       headers: {
         accept: "application/json",
-        "X-User-Token": opts.userToken,
+        "X-User-Token": caller.userToken,
         "content-type": "application/json",
         authorization: `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify({
         idempotencyKey: ContractSDK.generateUUID(),
         contractAddress: CONTRACT_ADDRESS,
-        walletId: opts.walletID,
+        walletId: caller.walletID,
         abiFunctionSignature: opts.ABIFunctionSignature,
         abiParameters: opts.ABIParameters,
         feeLevel: "LOW",
@@ -62,11 +70,9 @@ export default class ContractSDK {
    * @param opts Own contract options
    * @returns The challege ID to verify
    */
-  async ownContract(opts: OwnContractOptions) {
+  async ownContract(caller: ContractCaller, opts: OwnContractOptions) {
     try {
-      const challengeID = await this.execute({
-        walletID: opts.walletID,
-        userToken: opts.userToken,
+      const challengeID = await this.execute(caller, {
         ABIFunctionSignature: "claimContract(address)",
         ABIParameters: [opts.walletAddress],
       });
@@ -74,6 +80,19 @@ export default class ContractSDK {
       return challengeID
     } catch (error) {
       throw new Error("call to claimContract(address) failed", { cause: error });
+    }
+  }
+
+  async createGroup(caller: ContractCaller, opts: CreateGroupOptions) {
+    try {
+      const challengeID = await this.execute(caller, {
+        ABIFunctionSignature: "createSubGroup(address[], address, uint256, uint8)",
+        ABIParameters: [opts.members, opts.groupAddress, opts.allocation, opts.delays],
+      });
+
+      return challengeID;
+    } catch (error) {
+      throw new Error("call to createSubGroup(address[], address, uint256, uint8) failed", { cause: error });
     }
   }
 

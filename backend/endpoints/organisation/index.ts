@@ -8,11 +8,11 @@ const router = Router();
 
 /**
  * Add a user to an organisation.
- * 
+ *
  * In a real world implementation, we would check if the user is allowed to join the organisation
  * but also an invitation system with notification etc...
  * Unfortunately, we don't have time to implement a production ready organisation system :)
- * 
+ *
  * We would also check if the users wallet is correctly setup in the Circle API.
  */
 router.post("/:organisationID/add", bodyParser.json(), async (req, res, next) => {
@@ -45,10 +45,10 @@ router.post("/:organisationID/add", bodyParser.json(), async (req, res, next) =>
 
 /**
  * Create a new organisation.
- * 
+ *
  * In a real world application, we would check if the user is allowed to create an organisation.
  * We could also add more metadata related to the organisation, such as the address, the industry, etc...
- * 
+ *
  * The users shall also have a valid wallet on Circle API before performing this operation.
  */
 router.post("", bodyParser.json(), async (req, res, next) => {
@@ -74,21 +74,25 @@ router.post("", bodyParser.json(), async (req, res, next) => {
 
     const wallet = wallets[0];
     if (wallet.state !== "LIVE") {
-      return next(new Error(`user ${userID} wallet is not active.`))
+      return next(new Error(`user ${userID} wallet is not active.`));
     }
 
-    userWallet = wallet
+    userWallet = wallet;
   } catch (error) {
     return next(new Error("could not retrieve user wallets.", { cause: error }));
   }
 
   let challengeID: string;
   try {
-    challengeID = await ctx.contractSDK.ownContract({
-      walletID: userWallet.id,
-      userToken: userToken,
-      walletAddress: userWallet.address,
-    });
+    challengeID = await ctx.contractSDK.ownContract(
+      {
+        walletID: userWallet.id,
+        userToken: userToken,
+      },
+      {
+        walletAddress: userWallet.address,
+      }
+    );
   } catch (error) {
     return next(new Error("could not transfer contract ownership.", { cause: error }));
   }
