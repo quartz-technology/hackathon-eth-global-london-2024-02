@@ -18,11 +18,11 @@ export default function CreateOrganisationForm() {
 			return;
 		}
 
-		const res = await trigger({ name });
+		const res = await trigger({ userID: name });
 		if (!setOrganisation) return;
-		setOrganisation((res as any).data.org)
+		setOrganisation((res as any).data)
 
-		console.log((res as any).data.org);
+		console.log((res as any).data);
 	};
 
 	return (

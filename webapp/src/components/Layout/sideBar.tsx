@@ -12,7 +12,7 @@ const mylogo = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuHBOvXVQS
 const navigation = [{ name: 'Dashboard', href: '/', icon: HomeIcon }];
 
 const teams = [{ name: 'Create Organisation', href: '/org', initial: 'C' },
-			   { name: 'Create User', href: '/user', initial: 'U' }];
+			   { name: 'Create User', href: '/user', initial: 'U' }, { name: 'TEMPORAIRE', href: '/tmp', initial: 'TMP' }];
 
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(' ');
@@ -77,9 +77,9 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 			setNameConnect(event.target.value); // Update the state with the new value
 		};
 	
-		const handleConnect = (event: { preventDefault: () => void; }) => {
+		const handleConnect = async (event: { preventDefault: () => void; }) => {
 			event.preventDefault(); // Prevent the default form submit behavior
-			submit(nameConnect); // Assuming 'submit' is a function you've defined to handle the submission
+			await submit(nameConnect); // Assuming 'submit' is a function you've defined to handle the submission
 		};
 	
 		return (
