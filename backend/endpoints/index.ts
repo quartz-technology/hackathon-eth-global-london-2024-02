@@ -5,6 +5,9 @@ import organisation from './organisation'
 import user from './user'
 import group from './group'
 
+/**
+ * This file is the entry point for all the endpoints in the application.
+ */
 const router = Router()
 
 router.use('/healthcheck', healthcheck)

@@ -3,6 +3,14 @@ import { PrismaClient } from "@prisma/client";
 import config from "@config";
 import CircleUserSDK from "@service/circle";
 
+/**
+ * The context object is a collection of all the services and resources that are available 
+ * to the endpoint handlers.
+ * 
+ * It contains:
+ * - The CircleUserSDK instance
+ * - The PrismaClient instance
+ */
 interface Context {
     circleSDK: CircleUserSDK
     prisma: PrismaClient

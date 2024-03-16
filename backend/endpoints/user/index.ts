@@ -7,6 +7,12 @@ import type { User as CircleUser } from "@service/circle/types";
 
 const router = Router();
 
+/**
+ * Connect to an existing user on Circle API.
+ * 
+ * In a real-world application, we would implement an authentication system using basic auth
+ * or on chain impelmentation to ensure that the user is who he says he is.
+ */
 router.post("/connect", bodyParser.json(), async (req, res, next) => {
   const name = req.body.name;  
   if (!name) {
@@ -35,6 +41,13 @@ router.post("/connect", bodyParser.json(), async (req, res, next) => {
   }
 });
 
+/**
+ * Register a new user on Circle API.
+ * 
+ * In a real-world application, we would implement an authentication system using basic auth or
+ * on chain authentication system.
+ * We could also add more metadata related to the user, such as the email, the phone number, etc...
+ */
 router.post("/register", bodyParser.json(), async (req, res, next) => {
   const name = req.body.name;
   if (!name) {
@@ -61,6 +74,9 @@ router.post("/register", bodyParser.json(), async (req, res, next) => {
   }
 });
 
+/**
+ * Get the organisation of a user.
+ */
 router.get("/:userID/organisation", async (req, res, next) => {
   const userID = req.params.userID;
   if (!userID) {
@@ -79,6 +95,9 @@ router.get("/:userID/organisation", async (req, res, next) => {
   }
 });
 
+/**
+ * Get a user by its ID.
+ */
 router.get("/:userID", async (req, res, next) => {
   const userID = req.params.userID;
   if (!userID) {

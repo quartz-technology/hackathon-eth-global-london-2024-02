@@ -6,6 +6,15 @@ import httpStatus from "http-status";
 
 const router = Router();
 
+/**
+ * Add a user to an organisation.
+ * 
+ * In a real world implementation, we would check if the user is allowed to join the organisation
+ * but also an invitation system with notification etc...
+ * Unfortunately, we don't have time to implement a production ready organisation system :)
+ * 
+ * We would also check if the users wallet is correctly setup in the Circle API.
+ */
 router.post("/:organisationID/add", bodyParser.json(), async (req, res, next) => {
   const { userID } = req.body;
   if (!userID) {
@@ -34,6 +43,14 @@ router.post("/:organisationID/add", bodyParser.json(), async (req, res, next) =>
   }
 });
 
+/**
+ * Create a new organisation.
+ * 
+ * In a real world application, we would check if the user is allowed to create an organisation.
+ * We could also add more metadata related to the organisation, such as the address, the industry, etc...
+ * 
+ * The users shall also have a valid wallet on Circle API before performing this operation.
+ */
 router.post("", bodyParser.json(), async (req, res, next) => {
   const { name, userID } = req.body;
   if (!name) {
@@ -55,6 +72,9 @@ router.post("", bodyParser.json(), async (req, res, next) => {
   }
 });
 
+/**
+ * Get an organisation by its ID.
+ */
 router.get("/:organisationID", async (req, res, next) => {
   const organisationID = req.params.organisationID;
   if (!organisationID) {

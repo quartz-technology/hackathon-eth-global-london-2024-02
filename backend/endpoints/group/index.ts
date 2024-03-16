@@ -6,6 +6,9 @@ import httpStatus from "http-status";
 
 const router = Router();
 
+/**
+ * Create a new group in the organisation.
+ */
 router.post("", bodyParser.json(), async (req, res, next) => {
   const { name, userID, organisationID } = req.body;
   if (!name) {
@@ -31,6 +34,13 @@ router.post("", bodyParser.json(), async (req, res, next) => {
   }
 });
 
+/**
+ * Add a user to a group.
+ * 
+ * For simplicity and faster development, we are not checking if the user is already 
+ * in the group nor if he's part of the organisation.
+ * This is something we would do in a real-world application though if we had more time.
+ */
 router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
     const { userID } = req.body;
     if (!userID) {
@@ -59,6 +69,9 @@ router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
     }
 })
 
+/**
+ * Get a group by its ID.
+ */
 router.get("/:groupID", async (req, res, next) => {
   const groupID = req.params.groupID;
   if (!groupID) {
