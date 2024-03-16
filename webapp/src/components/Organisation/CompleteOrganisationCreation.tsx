@@ -7,17 +7,17 @@ let sdk: W3SSdk
 
 
 export default function CompleteOrganisationCreation() {
-	const { organisation } = useUserContext();
+	const { organisation, userConnectResponse } = useUserContext();
 
 	useEffect(() => {
 		sdk = new W3SSdk()
 	}, [])
 
 	const onSubmit = async () => {
-		if (!organisation ) return
+		if (!organisation || !userConnectResponse) return
 
 		sdk.setAppSettings({ appId: '1d98a445-1573-50f8-a929-29a3bcb2ee17' })
-		sdk.setAuthentication({ userToken: organisation?.userToken, encryptionKey: organisation?.encryptionKey })
+		sdk.setAuthentication({ userToken: userConnectResponse?.user.userToken, encryptionKey: userConnectResponse?.user.encryptionKey })
 
 		sdk.execute(organisation.challengeID, (error, result) => {
 			if (error) {
@@ -33,7 +33,7 @@ export default function CompleteOrganisationCreation() {
 			{!!organisation && <div className="w-full max-w-xs">
 				<div className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
 					<div className="mb-4">
-						Name: {!!organisation && organisation.name}
+						Name: {!!organisation && organisation.organisation.name}
 					</div>
 					<div className="flex items-center justify-between">
 						<button

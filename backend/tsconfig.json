@@ -26,7 +26,7 @@
       "@config": ["./config"],
       "@service": ["./service"],
       "@service/*": ["./service/*"],
-
+      "@server": ["./server"],
     }
   }
 }

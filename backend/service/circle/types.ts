@@ -1,8 +1,8 @@
-export interface CreateOrganisationOptions {
+export interface CreateUserOptions {
 	name: string;
 }
 
-export interface ConnectOrganisationOptions {
+export interface ConnectUserOptions {
 	userID: string;
 }
 
@@ -20,7 +20,8 @@ export interface Wallet {
 	challengeID: string;
 }
 
-export interface Organisation {
+export interface User {
+	userID: string;
 	name: string;
 	userToken: string;
 	encryptionKey: string;

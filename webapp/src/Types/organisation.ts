@@ -3,8 +3,10 @@ export interface CreateOrganisationOpts {
 }
 
 export interface Organisation {
-	name: string;
-	userToken: string;
-	encryptionKey: string;
-	challengeID: string;
+	message: string,
+	organisation: {
+		id: number,
+		name: string
+	},
+	challengeID: string
 }

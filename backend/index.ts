@@ -1,26 +1,8 @@
-import express from "express";
-import cors from "cors"
+import config from "@config";
 
-import config from "@config"
-import middlewares from '@middlewares'
-import endpoints from '@endpoints'
-import { init as initCtx } from "@context";
+import { createApp } from "./server";
 
-/**
- * Initialize context for the global application runtime
- */
-initCtx()
-
-/**
- * Create Express application server
- */
-const app = express();
-
-// Enable CORS
-app.use(cors())
-
-app.use("/", endpoints)
-app.use(middlewares.promiseCatcher);
+const app = createApp()
 
 /**
  * Start server
