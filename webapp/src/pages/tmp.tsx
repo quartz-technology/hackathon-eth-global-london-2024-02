@@ -15,8 +15,6 @@ export default function Tmp() {
 	}, [])
 
 	const onSubmit = async () => {
-		if (!userResponse ) return
-
 		sdk.setAppSettings({ appId: '1d98a445-1573-50f8-a929-29a3bcb2ee17' })
 		sdk.setAuthentication({ userToken: userConnectResponse?.user.userToken, encryptionKey: userConnectResponse?.user.encryptionKey })
 
