@@ -7,7 +7,7 @@ interface Context {
 
 let context: Partial<Context> = {}
 
-export function initContext() {
+export function init() {
     console.debug("Initializing context...")
 
     context.circleSDK = new CircleUserSDK(config.circleAPIKey)

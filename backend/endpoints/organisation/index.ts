@@ -2,6 +2,7 @@ import { Router } from 'express'
 import bodyParser from "body-parser";
 
 import ctx from '@context'
+import httpStatus from 'http-status';
 
 const router = Router()
 
@@ -12,7 +13,7 @@ router.post('', bodyParser.json(), async (req, res, next) => {
 
     try {
         const org = await ctx.circleSDK.createOrganisation({ name: req.body.name })
-        res.json({ message: "Organisation created!", org })
+        res.status(httpStatus.CREATED).json({ message: "Organisation created!", org })
     } catch (error) {
         return next(new Error("could not create organisation.", { cause: error }))
     }
