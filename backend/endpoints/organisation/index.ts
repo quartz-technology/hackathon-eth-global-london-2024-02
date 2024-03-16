@@ -54,4 +54,25 @@ router.post("", bodyParser.json(), async (req, res, next) => {
   }
 });
 
+router.get("/:organisationID", async (req, res, next) => {
+  const organisationID = req.params.organisationID;
+  if (!organisationID) {
+    return next(new Error("field organisationID is missing from request body."));
+  }
+
+  try {
+    const org = await ctx.prisma.organisation.findFirst({
+      where: { id: Number(organisationID) },
+      include: { groups: true, users: true },
+    });
+    if (!org?.id) {
+      return next(new Error(`organisation ${organisationID} not found.`));
+    }
+
+    return res.status(httpStatus.OK).json({ message: "Organisation found!", org });
+  } catch (error) {
+    return next(new Error("could not find organisation.", { cause: error }));
+  }
+});
+
 export default router;

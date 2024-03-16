@@ -14,12 +14,23 @@ model Organisation {
   id   Int    @id @default(autoincrement())
   name String
 
-  users User[]
+  users  User[]
+  groups Group[]
+}
+
+model Group {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  users          User[]
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  organisationId Int
 }
 
 model User {
-  id String @id
+  id   String @id
   name String
 
   organisations Organisation[]
+  groups        Group[]
 }

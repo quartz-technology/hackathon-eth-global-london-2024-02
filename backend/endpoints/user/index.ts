@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 
 import ctx from "@context";
 import httpStatus from "http-status";
-import type { User as CircleUser, Session } from "@service/circle/types";
+import type { User as CircleUser } from "@service/circle/types";
 
 const router = Router();
 
@@ -70,7 +70,7 @@ router.get("/:userID/organisation", async (req, res, next) => {
   try {
     const userOrganisation = await ctx.prisma.user.findFirst({
       where: { id: userID },
-      select: { organisations: true },
+      include: { organisations: true, groups: true },
     });
 
     return res.status(httpStatus.OK).json({ userOrganisation });
