@@ -33,7 +33,7 @@ router.post("", bodyParser.json(), async (req, res, next) => {
 
   let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
   try {
-    const wallets = await ctx.circleSDK.getUserWallet(userToken);
+    const wallets = await ctx.circleSDK.getUserWallet(userID);
     if (wallets.length === 0) {
       return next(new Error(`user ${userID} does not have a wallet.`));
     }
@@ -56,6 +56,7 @@ router.post("", bodyParser.json(), async (req, res, next) => {
       
     }, {
       members: [],
+      // TODO(): Dynamic ENS
       groupAddress: "0x1e6754B227C6ae4B0ca61D82f79D60660737554a",
       allocation: allocation,
       delays: 0
@@ -83,9 +84,69 @@ router.post("", bodyParser.json(), async (req, res, next) => {
  * This is something we would do in a real-world application though if we had more time.
  */
 router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
-    const { userID } = req.body;
+    const { userID, userToken, targetID, groupAddress } = req.body;
     if (!userID) {
       return next(new Error("field userID is missing from request body."));
+    }
+
+    if (!targetID) {
+      return next(new Error("field targetID is missing from request body."));
+    }
+
+    if (!userToken) {
+      return next(new Error("field userToken is missing from request body."));
+    }
+
+    if (!groupAddress) {
+      return next(new Error("field groupAddress is missing from request body."));
+    }
+
+    let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
+    try {
+      const wallets = await ctx.circleSDK.getUserWallet(userID);
+      if (wallets.length === 0) {
+        return next(new Error(`user ${userID} does not have a wallet.`));
+      }
+  
+      const wallet = wallets[0];
+      if (wallet.state !== "LIVE") {
+        return next(new Error(`user ${userID} wallet is not active.`));
+      }
+  
+      userWallet = wallet;
+    } catch (error) {
+      return next(new Error("could not retrieve user wallets.", { cause: error }));
+    }
+
+    let targetWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
+    try {
+      const wallets = await ctx.circleSDK.getUserWallet(targetID);
+      if (wallets.length === 0) {
+        return next(new Error(`user ${userID} does not have a wallet.`));
+      }
+  
+      const wallet = wallets[0];
+      if (wallet.state !== "LIVE") {
+        return next(new Error(`user ${userID} wallet is not active.`));
+      }
+  
+      targetWallet = wallet;
+    } catch (error) {
+      return next(new Error("could not retrieve user target wallets.", { cause: error }));
+    }
+
+    let challengeID: string
+    try {
+      challengeID = await ctx.contractSDK.addUserToGroup({
+        walletID: userWallet.id,
+        userToken,
+        
+      }, {
+        groupAddress,
+        userAddress: targetWallet.address,
+      });
+    } catch (error) {
+      return next(new Error("could not add user to group on contract.", { cause: error }));
     }
 
     const groupID = req.params.groupID;
@@ -104,7 +165,7 @@ router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
         data: { users: { connect: [{ id: userID }] } },
       });
 
-      return res.status(httpStatus.OK).json({ message: "User joined group!", group });
+      return res.status(httpStatus.OK).json({ message: "User joined group!", group, challengeID });
     } catch (error) {
       return next(new Error("could not join group.", { cause: error }));
     }

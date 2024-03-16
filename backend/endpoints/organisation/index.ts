@@ -67,7 +67,7 @@ router.post("", bodyParser.json(), async (req, res, next) => {
 
   let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
   try {
-    const wallets = await ctx.circleSDK.getUserWallet(userToken);
+    const wallets = await ctx.circleSDK.getUserWallet(userID);
     if (wallets.length === 0) {
       return next(new Error(`user ${userID} does not have a wallet.`));
     }

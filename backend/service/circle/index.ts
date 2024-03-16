@@ -160,12 +160,12 @@ export default class CircleUserSDK {
     }
   }
 
-  async getUserWallet(userToken: string) {
+  async getUserWallet(userID: string) {
     console.log(`get the wallets of the user`);
 
     try {
       const res = await this.client.listWallets({
-		userToken: userToken,
+		    userId: userID,
 	  });
       if (!res.data?.wallets) {
         throw new Error("could not retrieve user wallets.");
