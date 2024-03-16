@@ -44,6 +44,10 @@ All the code is tested using the Bun testing framework:
 bun test
 ```
 
+EDIT: It's not possible to run tests anymore because we need to verify the challenge ID on each operation.
+
+> 💡 That would be nice to have an option to force the verification for testing purpose!
+
 ## Documentation
 
 The code is fully documented, explore the code to see it :)
