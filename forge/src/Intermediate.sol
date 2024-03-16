@@ -27,8 +27,8 @@ contract Intermediate {
     address public ens_name_master; // The base Ens of the organisation
     mapping(address => SubGroupsStruct) public sub_groups; // Contains the list of sub-groups and their right
 
-    constructor(address _caller, address _ens_name_master) {
-        contract_master = _caller;
+    function claimContract(address _ens_name_master) external {
+        contract_master = msg.sender;
         ens_name_master = _ens_name_master;
     }
 
