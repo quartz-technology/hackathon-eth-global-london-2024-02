@@ -3,7 +3,7 @@ import { backendApi } from '../apiService';
 
 const extendedApi = backendApi.injectEndpoints({
 	endpoints: (builder) => ({
-		createOrganisation: builder.mutation<Organisation, { userID: string }>({
+		createOrganisation: builder.mutation<Organisation, { userID: string, name: string, userToken: string }>({
 			query: (body) => ({
 				url: '/organisation',
 				method: 'POST',

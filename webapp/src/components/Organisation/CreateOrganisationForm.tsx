@@ -4,7 +4,7 @@ import {useUserContext} from "../../contexts/userContext";
 import {Organisation} from "../../Types/organisation";
 
 export default function CreateOrganisationForm() {
-	const { setOrganisation } = useUserContext();
+	const { setOrganisation, userConnectResponse } = useUserContext();
 
 	const [name, setName] = useState<string>('');
 
@@ -18,7 +18,8 @@ export default function CreateOrganisationForm() {
 			return;
 		}
 
-		const res = await trigger({ userID: name });
+		if (!userConnectResponse) return;
+		const res = await trigger({ userID: userConnectResponse?.user.userID, name: name, userToken: userConnectResponse.user.userToken });
 		if (!setOrganisation) return;
 		setOrganisation((res as any).data)
 
