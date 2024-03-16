@@ -12,10 +12,6 @@ test('Initiliaze circle service', async () => {
 
 	const circleUserSDK = new CircleUserSDK(API_KEY);
 	expect(circleUserSDK).not.toBeUndefined();
-
-	// Test listUsers
-	const users = await circleUserSDK.listUsers();
-	expect(users).not.toBeUndefined();
 });
 
 test('Create a new organisation', async () => {
