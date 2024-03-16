@@ -148,6 +148,18 @@ export default class CircleUserSDK {
 		}
 	}
 
+	async getUser(userID: string) {
+		console.log(`get the user with id: ${userID}`);
+
+		try {
+			const res = await this.client.getUser({ userId: userID });
+
+			return res.data;
+		} catch (error) {
+			throw new Error('call to CircleAPI.getUser failed.', { cause: error });
+		}
+	}
+
 	/**
 	 * Generate a random UUID v4.
 	 */

@@ -28,7 +28,7 @@ router.post('/connect', bodyParser.json(), async (req, res, next) => {
     try {
         const session = await ctx.circleSDK.connectUser({ userID })
 
-        res.status(httpStatus.OK).json({ message: "User connected!", session })
+        return res.status(httpStatus.OK).json({ message: "User connected!", session })
     } catch (error) {
         return next(new Error("could not connect to user.", { cause: error }))
     }
@@ -53,9 +53,23 @@ router.post('/register', bodyParser.json(), async (req, res, next) => {
             data: { id: circleUser.userID, name: req.body.name },
         })
 
-        res.status(httpStatus.CREATED).json({ message: "User created!", circleUser })
+        return res.status(httpStatus.CREATED).json({ message: "User created!", circleUser })
     } catch (error) {
         return next(new Error("could not save user to database.", { cause: error }))
+    }
+})
+
+router.get("", async (req, res, next) => {
+    if (!req.body.userID) {
+        return next(new Error("field userID is missing from request body."))
+    }
+
+    try {
+        const user = await ctx.circleSDK.getUser(req.body.userID)
+
+        return res.status(httpStatus.OK).json({ user })
+    } catch (error) {
+        return next(new Error("could not get user.", { cause: error }))
     }
 })
 
