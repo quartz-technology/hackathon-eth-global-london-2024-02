@@ -2,7 +2,10 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Bars3Icon, HomeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 import React, { Fragment, ReactNode, useState } from 'react';
-
+import { useUserContext } from 'src/contexts/userContext';
+import { useConnectUserMutation } from 'src/services/request/user';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // eslint-disable-next-line import/no-absolute-path
 const mylogo = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuHBOvXVQSQbb0Yadd7iA4jrXDbQqmIHFTyA&usqp=CAU';
 
@@ -20,24 +23,8 @@ type SideBarProps = {
 	children?: ReactNode;
 };
 
-const LowerSection = () => {
-    return (
-        <li className="-mx-6 mt-auto flex justify-between items-center px-6 py-3">
-            <input
-                type="text"
-                placeholder="Enter username"
-                className="text-sm font-semibold leading-6 text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                aria-label="Username"
-            />
-            <button
-                type="submit"
-                className="ml-4 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-sm font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
-            >
-                Connect
-            </button>
-        </li>
-    );
-};
+
+
 
 
 
@@ -45,12 +32,75 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 	const router = useRouter();
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 
+	const { setUserConnectResponse } = useUserContext();
+	const [trigger] = useConnectUserMutation();
+
+	const submit = async (name: string) => {
+        console.log(`Submitting user creation with name: ${name}`);
+
+        if (name.length === 0) {
+            console.error('Name is required');
+            return;
+        }
+
+        try {
+            const res = await trigger({ name });
+            if (!setUserConnectResponse) return;
+            setUserConnectResponse((res as any).data);
+            console.log((res as any).data);
+
+            // Trigger success toast
+            toast.success("User created successfully!", {
+				position: "bottom-center"
+			});
+        } catch (error) {
+            // You can add a toast for error here if you want
+            console.error('Failed to create user', error);
+        }
+    };
+
+	const LowerSection = () => {
+		const [nameConnect, setNameConnect] = useState<string>('');
+
+		// This function is called every time the input value changes
+		const handleInputChange = (event: { target: { value: any; }; }) => {
+			setNameConnect(event.target.value); // Update the state with the new value
+		};
+	
+		const handleConnect = (event: { preventDefault: () => void; }) => {
+			event.preventDefault(); // Prevent the default form submit behavior
+			submit(nameConnect); // Assuming 'submit' is a function you've defined to handle the submission
+		};
+	
+		return (
+			<li className="-mx-6 mt-auto flex justify-between items-center px-6 py-3">
+				<form onSubmit={handleConnect} className="w-full flex">
+					<input
+						type="text"
+						placeholder="Enter username"
+						value={nameConnect} // Set the input's value to the 'name' state
+						onChange={handleInputChange} // Attach the change handler
+						className="text-sm font-semibold leading-6 text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+						aria-label="Username"
+					/>
+					<button
+						type="submit" // Ensure the button submits the form
+						className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-sm font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+					>
+						Connect
+					</button>
+				</form>
+			</li>
+		);
+	};
+
 	const isLinkActive = (currentSlug: string) => {
 		return router.pathname === currentSlug;
 	};
 
 	return (
 		<>
+			<ToastContainer />
 			<div>
 				<Transition.Root show={sidebarOpen} as={Fragment}>
 					<Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
@@ -100,6 +150,7 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 									<div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
 										<div className="flex h-24 shrink-0 items-center">
 											<img className="h-16 w-auto rounded-2xl" src={mylogo} alt="Company Logo" />
+											
 										</div>
 										<nav className="flex flex-1 flex-col">
 											<ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -177,8 +228,9 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 				<div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
 					{/* Sidebar component, swap this element with another sidebar if you like */}
 					<div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
-						<div className="flex h-24 shrink-0 items-center">
+						<div className="flex gap-8 h-24 shrink-0 items-center">
 							<img className="h-16 w-auto rounded-2xl" src={mylogo} alt="Company logo" />
+							<h1 className="text-3xl font-bold text-gray-900">Bedal</h1>
 						</div>
 						<nav className="flex flex-1 flex-col">
 							<ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -240,7 +292,7 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 										))}
 									</ul>
 								</li>
-								<LowerSection />
+								<LowerSection/>
 							</ul>
 						</nav>
 					</div>
@@ -267,6 +319,8 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 					<a href="#">
 						<img className="h-8 w-8 rounded-2xl bg-gray-50" src={mylogo} alt="" />
 					</a>
+					<h1 className=" font-bold text-gray-900">Bedal</h1>
+
 				</div>
 
 				<main className="lg:pl-72">

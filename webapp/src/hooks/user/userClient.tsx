@@ -1,12 +1,15 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {Organisation} from "../../Types/organisation";
-import { CreateUserResponse } from 'src/Types/userType';
+import { ConnectUserResponse, CreateUserResponse } from 'src/Types/userType';
 
 export interface UserClientInterface {
 	organisation?: Organisation
 	loading: boolean; // Is the context loaded
 	userResponse?: CreateUserResponse;
 	setUserResponse?: Dispatch<SetStateAction<CreateUserResponse | undefined>>;
+	userConnectResponse?: ConnectUserResponse;
+	setUserConnectResponse?: Dispatch<SetStateAction<ConnectUserResponse | undefined>>;
+
 
 	setOrganisation?:  Dispatch<SetStateAction<Organisation | undefined>>;
 }
@@ -19,6 +22,7 @@ const UseUserClient = () => {
 	const [loading, setLoading] = useState<boolean>(userInitialState.loading);
 	const [organisation, setOrganisation] = useState<Organisation | undefined>();
 	const [userResponse, setUserResponse] = useState<CreateUserResponse | undefined>();
+	const [userConnectResponse, setUserConnectResponse] = useState<CreateUserResponse | undefined>();
 
 	/**
 	 * Init the application
@@ -33,7 +37,9 @@ const UseUserClient = () => {
 		organisation,
 		setOrganisation,
 		userResponse,
-		setUserResponse
+		setUserResponse,
+		userConnectResponse,
+		setUserConnectResponse
 	} as UserClientInterface;
 };
 
