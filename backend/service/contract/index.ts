@@ -7,7 +7,6 @@ import { CircleAPIBaseURL } from "@service/circle/constants";
 interface ExecuteOptions {
   walletID: string;
   userToken: string;
-  endpoint: string;
   ABIFunctionSignature: string;
   ABIParameters: string[];
 }
@@ -21,50 +20,61 @@ interface OwnContractOptions {
 const CONTRACT_ADDRESS = "0x5c1A58163829C0036D0c3e68A7EA155E092683cf";
 
 export default class ContractSDK {
-  // TODO(RGascoin): Add the smart contract address
-  private readonly address = "";
-
-  private client: AxiosInstance;
+  private readonly apiKey: string;
 
   constructor(apiKey: string) {
-    this.client = axios.create({
-      baseURL: CircleAPIBaseURL,
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
+    this.apiKey = apiKey;
   }
 
-  private async execute(opts: ExecuteOptions) {
-    try {
-      const res = await this.client.post(
-        `/${opts.endpoint}`,
-        {
-          idempotencyKey: ContractSDK.generateUUID(),
-          contractAddres: CONTRACT_ADDRESS,
-          walletID: opts.walletID,
-        },
-        {
-          headers: {
-            "X-User-Token": opts.userToken,
-          },
-        }
-      );
+  async execute(opts: ExecuteOptions) {
+    const url = `${CircleAPIBaseURL}/transactions/contractExecution`;
+    const options = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "X-User-Token": opts.userToken,
+        "content-type": "application/json",
+        authorization: `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        idempotencyKey: ContractSDK.generateUUID(),
+        contractAddress: CONTRACT_ADDRESS,
+        walletId: opts.walletID,
+        abiFunctionSignature: opts.ABIFunctionSignature,
+        abiParameters: opts.ABIParameters,
+        feeLevel: "LOW",
+      }),
+    };
 
-      return res.data;
+    try {
+      const response = await fetch(url, options);
+
+      const data = (await response.json()) as any;
+      return data.data.challengeId;
     } catch (error) {
-      throw new Error(`call to CircleAPI.${opts.endpoint} failed.`, { cause: error });
+      throw new Error("call to CircleAPI.execute transaction failed", { cause: error });
     }
   }
 
+  /**
+   * Transfer the ownership of a contract to the user's wallet.
+   * 
+   * @param opts Own contract options
+   * @returns The challege ID to verify
+   */
   async ownContract(opts: OwnContractOptions) {
-    return this.execute({
-      walletID: opts.walletID,
-      userToken: opts.userToken,
-      endpoint: "transactions/contractExecution",
-      ABIFunctionSignature: "claimContract(address)",
-      ABIParameters: [opts.walletAddress],
-    });
+    try {
+      const challengeID = await this.execute({
+        walletID: opts.walletID,
+        userToken: opts.userToken,
+        ABIFunctionSignature: "claimContract(address)",
+        ABIParameters: [opts.walletAddress],
+      });
+
+      return challengeID
+    } catch (error) {
+      throw new Error("call to claimContract(address) failed", { cause: error });
+    }
   }
 
   /**

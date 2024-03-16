@@ -82,8 +82,9 @@ router.post("", bodyParser.json(), async (req, res, next) => {
     return next(new Error("could not retrieve user wallets.", { cause: error }));
   }
 
+  let challengeID: string;
   try {
-    await ctx.contractSDK.ownContract({
+    challengeID = await ctx.contractSDK.ownContract({
       walletID: userWallet.id,
       userToken: userToken,
       walletAddress: userWallet.address,
@@ -97,7 +98,7 @@ router.post("", bodyParser.json(), async (req, res, next) => {
       data: { name: name, users: { connect: [{ id: userID }] } },
     });
 
-    return res.status(httpStatus.CREATED).json({ message: "Organisation created!", organisation });
+    return res.status(httpStatus.CREATED).json({ message: "Organisation created!", organisation, challengeID });
   } catch (error) {
     return next(new Error("could not create organisation.", { cause: error }));
   }
