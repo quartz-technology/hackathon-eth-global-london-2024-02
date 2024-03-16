@@ -10,4 +10,5 @@ const extendedApi = backendApi.injectEndpoints({
 	}),
 });
 
+// eslint-disable-next-line import/prefer-default-export
 export const { useGetUserQuery } = extendedApi;

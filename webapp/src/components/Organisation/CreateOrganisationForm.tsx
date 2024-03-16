@@ -1,0 +1,48 @@
+import React, { useState } from 'react';
+import { useCreateOrganisationMutation } from 'src/services/request/organisation';
+
+export default function CreateOrganisationForm() {
+	const [name, setName] = useState<string>('');
+
+	const [trigger, { data }] = useCreateOrganisationMutation();
+
+	const submit = async () => {
+		console.log(`Submitting org creation with name: ${name}`);
+
+		if (name.length === 0) {
+			console.error('Name is required');
+			return;
+		}
+
+		await trigger({ name });
+		console.log(data);
+	};
+
+	return (
+		<div className="w-full max-w-xs">
+			<form className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+				<div className="mb-4">
+					<label className="mb-2 block text-sm font-bold text-gray-700" htmlFor="name">
+						Name
+					</label>
+					<input
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+						id="name"
+						type="text"
+						placeholder="Name"
+					/>
+				</div>
+				<div className="flex items-center justify-between">
+					<button
+						className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+						onClick={async () => submit}
+					>
+						Create
+					</button>
+				</div>
+			</form>
+		</div>
+	);
+}
