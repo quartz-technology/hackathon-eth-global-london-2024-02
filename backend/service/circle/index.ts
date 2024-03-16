@@ -2,33 +2,60 @@ import { initiateUserControlledWalletsClient } from '@circle-fin/user-controlled
 import { v4 as uuidv4 } from 'uuid';
 
 import { AccountType, Blockchain } from './constants';
-import type { ConnectOrganisationOptions, CreateOrganisationOptions, InitWalletOptions, Organisation, OrganisationSession, Wallet } from './types';
+import type { ConnectOrganisationOptions, CreateOrganisationOptions, InitWalletOptions, Organisation, Session, Wallet } from './types';
 
+/**
+ * CircleUserSDK is a wrapper around the Circle API to create and manage organisations and wallets.
+ * 
+ * It provides the following functionalities:
+ * - Create a new organisation.
+ * - Initialize a wallet for an organisation.
+ * - Connect to an existing organisation.
+ * - List all organisations.
+ * 
+ * This class aims to abstract all the logic related to the Circle API and provide a simple
+ * interface to interact with it.
+ */
 export default class CircleUserSDK {
+	/**
+	 * The Circle API client.
+	 */
 	private client: ReturnType<typeof initiateUserControlledWalletsClient>;
 
 	constructor(apiKey: string) {
-		this.client = initiateUserControlledWalletsClient({
-			apiKey,
-		});
+		this.client = initiateUserControlledWalletsClient({ apiKey });
 	}
 
+	/**
+	 * Create a new organisation will generate a user identifier and register
+	 * it in the circle API.
+	 * It then connects to the organisation to get a session token and encryption key and
+	 * create a wallet.
+	 * 
+	 * To activate the wallet, the user will need to set a PIN code in the web app.
+	 * 
+	 * @param opts The options to create the organisation.
+	 * @returns The organisation details.
+	 * 
+	 * @throws {Error} If the call to the Circle API fails.
+	 * @throws {Error} If connection attempt fails.
+	 * @throws {Error} If the wallet initialization fails.
+	 */
 	async createOrganisation(opts: CreateOrganisationOptions): Promise<Organisation> {
 		console.debug(`Create a new organisation: ${opts.name}`);
 
+		// Generate a random user ID
 		const userID = CircleUserSDK.generateUUID();
 
 		// Create a user in Circle
 		try {
 			await this.client.createUser({ userId: userID });
-
-			// TODO(TomChv): Call smart contract to register new organisation
 		} catch (error) {
 			throw new Error('call to CircleAPI.createUser failed.', { cause: error });
 		}
 
 		// Connect the organisation to get a session token
-		let connectResult: OrganisationSession;
+		let connectResult: Session;
 		try {
 			connectResult = await this.connectOrganisation({ userID });
 		} catch (error) {
@@ -54,7 +81,16 @@ export default class CircleUserSDK {
 		};
 	}
 
-	async initWallet(opts: InitWalletOptions): Promise<Wallet> {
+	/**
+	 * Initialize a wallet for an organisation.
+	 * 
+	 * @param opts The options to initialize the wallet.
+	 * @returns The wallet details.
+	 * 
+	 * @throws {Error} If the call to the Circle API fails.
+	 * @throws {Error} If the challenge ID is not returned by Circle.
+	 */
+	private async initWallet(opts: InitWalletOptions): Promise<Wallet> {
 		console.debug(`Initialize wallet of organisation: ${opts.name}`);
 
 		try {
@@ -76,7 +112,17 @@ export default class CircleUserSDK {
 		}
 	}
 
-	async connectOrganisation(opts: ConnectOrganisationOptions): Promise<OrganisationSession> {
+	/**
+	 * Create a session to an existing organisation.
+	 * 
+	 * @param opts The options to connect to the organisation.
+	 * @returns The organisation session details.
+	 * 
+	 * @throws {Error} If the call to the Circle API fails.
+	 * @throws {Error} If the user session is not returned by Circle.
+	 * @throws {Error} If the encryption key is not returned by Circle.
+	 */
+	async connectOrganisation(opts: ConnectOrganisationOptions): Promise<Session> {
 		console.debug('Connect to an existing organisation');
 
 		try {
@@ -101,16 +147,9 @@ export default class CircleUserSDK {
 		}
 	}
 
-	async listUsers() {
-		// Call smart contract to list organisation
-		try {
-			const res = await this.client.listUsers();
-			return res.data?.users || [];
-		} catch (error) {
-			throw new Error('call to CircleAPI.listUsers failed.', { cause: error });
-		}
-	}
-
+	/**
+	 * Generate a random UUID v4.
+	 */
 	private static generateUUID(): string {
 		return uuidv4();
 	}
@@ -121,6 +160,6 @@ export type {
 	CreateOrganisationOptions,
 	InitWalletOptions,
 	Organisation,
-	OrganisationSession,
+	Session,
 	Wallet,
 }

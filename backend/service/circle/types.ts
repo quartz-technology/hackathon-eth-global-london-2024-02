@@ -8,10 +8,10 @@ export interface ConnectOrganisationOptions {
 
 export interface InitWalletOptions {
 	name: string;
-	session: OrganisationSession;
+	session: Session;
 }
 
-export interface OrganisationSession {
+export interface Session {
 	userToken: string;
 	encryptionKey: string;
 }
