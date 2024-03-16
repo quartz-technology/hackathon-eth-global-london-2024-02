@@ -17,6 +17,16 @@
     "skipLibCheck": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    "paths": {
+      "@context": ["./context"],
+      "@endpoints": ["./endpoints"],
+      "@middlewares": ["./middlewares"],
+      "@config": ["./config"],
+      "@service": ["./service"],
+      "@service/*": ["./service/*"],
+
+    }
   }
 }

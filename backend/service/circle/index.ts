@@ -115,3 +115,12 @@ export default class CircleUserSDK {
 		return uuidv4();
 	}
 }
+
+export type {
+	ConnectOrganisationOptions,
+	CreateOrganisationOptions,
+	InitWalletOptions,
+	Organisation,
+	OrganisationSession,
+	Wallet,
+}
