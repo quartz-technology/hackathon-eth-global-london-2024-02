@@ -32,7 +32,7 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 	const router = useRouter();
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 
-	const { setUserConnectResponse } = useUserContext();
+	const { userConnectResponse, setUserConnectResponse } = useUserContext();
 	const [trigger] = useConnectUserMutation();
 
 	const submit = async (name: string) => {
@@ -50,9 +50,19 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
             console.log((res as any).data);
 
             // Trigger success toast
-            toast.success("User created successfully!", {
+            toast.success("User connected successfully!", {
 				position: "bottom-center"
 			});
+
+			if (!userConnectResponse) return;
+			setUserConnectResponse({
+                ...userConnectResponse, // Spread the existing data
+                user: {
+                    ...userConnectResponse.user,
+                    name: name, // Setting the name from the form, as it's not in the response
+                }
+            });
+
         } catch (error) {
             // You can add a toast for error here if you want
             console.error('Failed to create user', error);
@@ -74,23 +84,36 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 	
 		return (
 			<li className="-mx-6 mt-auto flex justify-between items-center px-6 py-3">
-				<form onSubmit={handleConnect} className="w-full flex">
-					<input
-						type="text"
-						placeholder="Enter username"
-						value={nameConnect} // Set the input's value to the 'name' state
-						onChange={handleInputChange} // Attach the change handler
-						className="text-sm font-semibold leading-6 text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-						aria-label="Username"
-					/>
-					<button
-						type="submit" // Ensure the button submits the form
-						className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-sm font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
-					>
-						Connect
-					</button>
-				</form>
-			</li>
+            {/* Displaying the connected user's name */}
+            <div className="w-full ">
+                {userConnectResponse && userConnectResponse.user.name && (
+					<div className='flex gap-2'>
+                    <p className="text-xs font-semibold text-gray-500">
+                        Connected as: 
+                    </p>
+					<p className="text-xs font-semibold text-gray-700">
+					{userConnectResponse.user.name}
+				</p>
+				</div>
+                )}
+                <form onSubmit={handleConnect} className="flex items-center">
+                    <input
+                        type="text"
+                        placeholder="Enter username"
+                        value={nameConnect}
+                        onChange={handleInputChange}
+                        className="text-sm font-semibold leading-6 text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        aria-label="Username"
+                    />
+                    <button
+                        type="submit"
+                        className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 focus:ring-offset-blue-200 text-white transition ease-in duration-200 text-center text-sm font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+                    >
+                        Connect
+                    </button>
+                </form>
+            </div>
+        </li>
 		);
 	};
 

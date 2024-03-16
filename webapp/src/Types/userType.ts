@@ -22,5 +22,6 @@ export type ConnectUserResponse = {
         userToken: string;
         encryptionKey: string;
         userID: string;
+		name?: string;
     };
 };
