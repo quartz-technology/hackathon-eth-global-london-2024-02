@@ -1,10 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import { useCreateOrganisationMutation } from 'src/services/request/organisation';
+import {useUserContext} from "../../contexts/userContext";
+import {Organisation} from "../../Types/organisation";
 
 export default function CreateOrganisationForm() {
+	const { setOrganisation } = useUserContext();
+
 	const [name, setName] = useState<string>('');
 
-	const [trigger, { data }] = useCreateOrganisationMutation();
+	const [trigger] = useCreateOrganisationMutation();
 
 	const submit = async () => {
 		console.log(`Submitting org creation with name: ${name}`);
@@ -14,12 +18,12 @@ export default function CreateOrganisationForm() {
 			return;
 		}
 
-		await trigger({ name });
-	};
+		const res = await trigger({ name });
+		if (!setOrganisation) return;
+		setOrganisation((res as any).data.org)
 
-	useEffect(() => {
-		console.log(data)
-	}, [data])
+		console.log((res as any).data.org);
+	};
 
 	return (
 		<div className="w-full max-w-xs">

@@ -4,8 +4,6 @@ import SideBar from '../components/Layout/sideBar';
 import { useUserContext } from '../contexts/userContext';
 
 export default function Home() {
-	const { user } = useUserContext();
-
 	return (
 		<div className={'max-w-full'}>
 			<SideBar customSectionHeader={undefined}>

@@ -20,6 +20,7 @@
     "test:e2e:cov": "start-test start:dev http://localhost:3000 'cypress run --config-file ./test/cypress.config.ts && nyc report --reporter=text-summary --report-dir=test/coverage --temp-dir=test/.nyc_output'"
   },
   "dependencies": {
+    "@circle-fin/w3s-pw-web-sdk": "^1.0.9",
     "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^2.0.18",
     "@reduxjs/toolkit": "^1.9.7",
