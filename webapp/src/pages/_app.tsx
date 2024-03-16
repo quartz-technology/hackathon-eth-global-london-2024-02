@@ -6,13 +6,16 @@ import { Provider } from 'react-redux';
 
 import { UserContextProvider } from '../contexts/userContext';
 import { store } from '../store/store';
+import { ModalProvider } from 'src/contexts/modalContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Provider store={store}>
 				<UserContextProvider>
-					<Component {...pageProps} />
+					<ModalProvider>
+						<Component {...pageProps} />
+					</ModalProvider>
 				</UserContextProvider>
 			</Provider>
 		</>

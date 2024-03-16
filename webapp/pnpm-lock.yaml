@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@circle-fin/w3s-pw-web-sdk':
+    specifier: ^1.0.9
+    version: 1.0.9
   '@headlessui/react':
     specifier: ^1.7.15
     version: 1.7.15(react-dom@18.2.0)(react@18.2.0)
@@ -1391,6 +1394,11 @@ packages:
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
+
+  /@circle-fin/w3s-pw-web-sdk@1.0.9:
+    resolution: {integrity: sha512-sepqMzpXmNKbwtNhTMwofJQNLu19NdY+kffz17VlvKsHAmhtXP7+VPr0qMIPr+7zh8NGdFHbxRBYV9/lGRo7ug==}
+    engines: {node: '>=10.0.0'}
+    dev: false
 
   /@colors/colors@1.5.0:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}

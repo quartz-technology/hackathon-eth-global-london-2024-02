@@ -3,6 +3,7 @@ import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import React, { useState, useEffect, Fragment, } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
 import { useFlowContext } from 'src/contexts/flowContext';
+import { ModalType, useModalContext } from 'src/contexts/modalContext';
 import { classNames } from 'src/utils/classnameJoin';
 import { getIdBasedColor } from 'src/utils/color';
 
@@ -15,6 +16,8 @@ interface DepartmentNodeProps extends NodeProps {
 }
 
 const DepartmentNode: React.FC<DepartmentNodeProps> = ({ id, data }) => {
+    const { openModal } = useModalContext();
+
     const { nodes, addPeopleNode } = useFlowContext();
     const [allocatedBudget, setAllocatedBudget] = useState(data.allocatedBudget || 0);
   
@@ -96,7 +99,22 @@ const DepartmentNode: React.FC<DepartmentNodeProps> = ({ id, data }) => {
                   <Menu.Item>
                     {({ active }) => (
                       <a
+                        onClick={() => openModal(ModalType.Type2, { id: id })}
                         href="#"
+                        className={classNames(
+                          active ? 'bg-gray-50' : '',
+                          'block px-3 py-1 text-sm leading-6 text-gray-900'
+                        )}
+                      >
+                        Add people
+                      </a>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        onClick={() => openModal(ModalType.Type3, { id: id })}
                         className={classNames(
                           active ? 'bg-gray-50' : '',
                           'block px-3 py-1 text-sm leading-6 text-gray-900'
@@ -109,7 +127,7 @@ const DepartmentNode: React.FC<DepartmentNodeProps> = ({ id, data }) => {
                   <Menu.Item>
                     {({ active }) => (
                       <a
-                        onClick={onAddPeople}
+                        onClick={() => openModal(ModalType.Type4)}
                         href="#"
                         className={classNames(
                           active ? 'bg-gray-50' : '',
@@ -120,6 +138,7 @@ const DepartmentNode: React.FC<DepartmentNodeProps> = ({ id, data }) => {
                       </a>
                     )}
                   </Menu.Item>
+                  
                 </Menu.Items>
               </Transition>
             </Menu>
