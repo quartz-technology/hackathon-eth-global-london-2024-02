@@ -2,16 +2,16 @@ import { initiateUserControlledWalletsClient } from '@circle-fin/user-controlled
 import { v4 as uuidv4 } from 'uuid';
 
 import { AccountType, Blockchain } from './constants';
-import type { ConnectOrganisationOptions, CreateOrganisationOptions, InitWalletOptions, Organisation, Session, Wallet } from './types';
+import type { ConnectUserOptions, CreateUserOptions, InitWalletOptions, User, Session, Wallet } from './types';
 
 /**
- * CircleUserSDK is a wrapper around the Circle API to create and manage organisations and wallets.
+ * CircleUserSDK is a wrapper around the Circle API to create and manage Users and wallets.
  * 
  * It provides the following functionalities:
- * - Create a new organisation.
- * - Initialize a wallet for an organisation.
- * - Connect to an existing organisation.
- * - List all organisations.
+ * - Create a new User.
+ * - Initialize a wallet for an User.
+ * - Connect an existing User.
+ * - List all Users.
  * 
  * This class aims to abstract all the logic related to the Circle API and provide a simple
  * interface to interact with it.
@@ -27,22 +27,22 @@ export default class CircleUserSDK {
 	}
 
 	/**
-	 * Create a new organisation will generate a user identifier and register
+	 * Create a new User will generate a user identifier and register
 	 * it in the circle API.
-	 * It then connects to the organisation to get a session token and encryption key and
+	 * It then connects to the User to get a session token and encryption key and
 	 * create a wallet.
 	 * 
 	 * To activate the wallet, the user will need to set a PIN code in the web app.
 	 * 
-	 * @param opts The options to create the organisation.
-	 * @returns The organisation details.
+	 * @param opts The options to create the User.
+	 * @returns The User details.
 	 * 
 	 * @throws {Error} If the call to the Circle API fails.
 	 * @throws {Error} If connection attempt fails.
 	 * @throws {Error} If the wallet initialization fails.
 	 */
-	async createOrganisation(opts: CreateOrganisationOptions): Promise<Organisation> {
-		console.debug(`Create a new organisation: ${opts.name}`);
+	async createUser(opts: CreateUserOptions): Promise<User> {
+		console.debug(`Create a new User: ${opts.name}`);
 
 		// Generate a random user ID
 		const userID = CircleUserSDK.generateUUID();
@@ -54,15 +54,15 @@ export default class CircleUserSDK {
 			throw new Error('call to CircleAPI.createUser failed.', { cause: error });
 		}
 
-		// Connect the organisation to get a session token
+		// Connect the User to get a session token
 		let connectResult: Session;
 		try {
-			connectResult = await this.connectOrganisation({ userID });
+			connectResult = await this.connectUser({ userID });
 		} catch (error) {
-			throw new Error('could not connect to the newly created organisation.', { cause: error });
+			throw new Error('could not connect to the newly created User.', { cause: error });
 		}
 
-		// Initialiaze the wallet for the organisation
+		// Initialiaze the wallet for the User
 		let wallet: Wallet;
 		try {
 			wallet = await this.initWallet({
@@ -70,10 +70,11 @@ export default class CircleUserSDK {
 				session: connectResult,
 			});
 		} catch (error) {
-			throw new Error('could not initialize wallet for the newly created organisation.', { cause: error });
+			throw new Error('could not initialize wallet for the newly created User.', { cause: error });
 		}
 
 		return {
+			userID,
 			name: opts.name,
 			userToken: connectResult.userToken,
 			encryptionKey: connectResult.encryptionKey,
@@ -82,7 +83,7 @@ export default class CircleUserSDK {
 	}
 
 	/**
-	 * Initialize a wallet for an organisation.
+	 * Initialize a wallet for an User.
 	 * 
 	 * @param opts The options to initialize the wallet.
 	 * @returns The wallet details.
@@ -91,7 +92,7 @@ export default class CircleUserSDK {
 	 * @throws {Error} If the challenge ID is not returned by Circle.
 	 */
 	private async initWallet(opts: InitWalletOptions): Promise<Wallet> {
-		console.debug(`Initialize wallet of organisation: ${opts.name}`);
+		console.debug(`Initialize wallet of User: ${opts.name}`);
 
 		try {
 			const res = await this.client.createUserPinWithWallets({
@@ -113,17 +114,17 @@ export default class CircleUserSDK {
 	}
 
 	/**
-	 * Create a session to an existing organisation.
+	 * Create a session to an existing User.
 	 * 
-	 * @param opts The options to connect to the organisation.
-	 * @returns The organisation session details.
+	 * @param opts The options to connect to the User.
+	 * @returns The User session details.
 	 * 
 	 * @throws {Error} If the call to the Circle API fails.
 	 * @throws {Error} If the user session is not returned by Circle.
 	 * @throws {Error} If the encryption key is not returned by Circle.
 	 */
-	async connectOrganisation(opts: ConnectOrganisationOptions): Promise<Session> {
-		console.debug('Connect to an existing organisation');
+	async connectUser(opts: ConnectUserOptions): Promise<Session> {
+		console.debug('Connect to an existing User');
 
 		try {
 			const res = await this.client.createUserToken({
@@ -156,10 +157,10 @@ export default class CircleUserSDK {
 }
 
 export type {
-	ConnectOrganisationOptions,
-	CreateOrganisationOptions,
+	ConnectUserOptions,
+	CreateUserOptions,
 	InitWalletOptions,
-	Organisation,
+	User,
 	Session,
 	Wallet,
 }
