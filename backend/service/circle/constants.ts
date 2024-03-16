@@ -17,3 +17,5 @@ export enum AccountType {
 	Sca = 'SCA',
 	Eoa = 'EOA',
 }
+
+export const CircleAPIBaseURL = "https://api.circle.com/v1/w3s/user";

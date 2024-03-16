@@ -52,13 +52,44 @@ router.post("/:organisationID/add", bodyParser.json(), async (req, res, next) =>
  * The users shall also have a valid wallet on Circle API before performing this operation.
  */
 router.post("", bodyParser.json(), async (req, res, next) => {
-  const { name, userID } = req.body;
+  const { name, userID, userToken } = req.body;
   if (!name) {
     return next(new Error("field name is missing from request body."));
   }
 
   if (!userID) {
     return next(new Error("field userID is missing from request body."));
+  }
+
+  if (!userToken) {
+    return next(new Error("field userToken is missing from request body."));
+  }
+
+  let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
+  try {
+    const wallets = await ctx.circleSDK.getUserWallet(userToken);
+    if (wallets.length === 0) {
+      return next(new Error(`user ${userID} does not have a wallet.`));
+    }
+
+    const wallet = wallets[0];
+    if (wallet.state !== "LIVE") {
+      return next(new Error(`user ${userID} wallet is not active.`))
+    }
+
+    userWallet = wallet
+  } catch (error) {
+    return next(new Error("could not retrieve user wallets.", { cause: error }));
+  }
+
+  try {
+    await ctx.contractSDK.ownContract({
+      walletID: userWallet.id,
+      userToken: userToken,
+      walletAddress: userWallet.address,
+    });
+  } catch (error) {
+    return next(new Error("could not transfer contract ownership.", { cause: error }));
   }
 
   try {

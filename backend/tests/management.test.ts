@@ -103,6 +103,7 @@ describe("Manage organisation flow", async () => {
     const res = await supertest(app).post("/organisation").send({
       name: organisationName,
       userID: users[masterName].userID,
+      userToken: users[masterName].userToken,
     });
 
     expect(res.status).toBe(201);
@@ -182,9 +183,10 @@ describe("Manage group", async () => {
     const res = await supertest(app).post("/organisation").send({
       name: organisationName,
       userID: users[masterName].userID,
+      userToken: users[masterName].userToken,
     });
 
-    expect(res.status).toBe(201);
+    assert(res.status).toBe(201);
 
     const organisation = res.body.organisation;
     expect(organisation).toHaveProperty("id");

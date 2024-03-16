@@ -3,6 +3,8 @@ export function promiseCatcher(err: any, req: any, res: any, next: any) {
     if (!err.statusCode) {
         err.statusCode = 500;
     }
+
+    console.error(err)
   
     res.status(err.statusCode).json({
         status: err.statusCode,

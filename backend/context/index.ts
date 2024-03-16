@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 import config from "@config";
 import CircleUserSDK from "@service/circle";
+import ContractSDK from "@service/contract";
 
 /**
  * The context object is a collection of all the services and resources that are available 
@@ -14,6 +15,7 @@ import CircleUserSDK from "@service/circle";
 interface Context {
     circleSDK: CircleUserSDK
     prisma: PrismaClient
+    contractSDK: ContractSDK
 }
 
 let context: Partial<Context> = {}
@@ -22,6 +24,7 @@ export function init() {
     console.debug("Initializing context...")
 
     context.circleSDK = new CircleUserSDK(config.circleAPIKey)
+    context.contractSDK = new ContractSDK(config.circleAPIKey)
     context.prisma = new PrismaClient()
 
     console.log("Context initialized!")
