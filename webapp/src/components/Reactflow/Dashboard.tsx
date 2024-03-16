@@ -44,11 +44,11 @@ export default function Dashboard() {
         <Controls />
         <Background />
       </ReactFlow>
-      <div className="flex flex-1 flex-row-reverse">
+      {/* <div className="flex flex-1 flex-row-reverse">
             <div onClick={() => {addDepartment(`Name`, 1000); }} className="cursor-pointer absolute  bottom-0 mr-2 mb-2 z-50 flex items-center justify-center bg-red-500 rounded-full h-20 w-20">
                 +
             </div>
-        </div>
+        </div> */}
     </div>
   );
 }

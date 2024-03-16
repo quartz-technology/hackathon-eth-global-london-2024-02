@@ -3,6 +3,7 @@ import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid';
 import React, { useState, useEffect, Fragment } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
 import { useFlowContext } from 'src/contexts/flowContext';
+import { ModalType, useModalContext } from 'src/contexts/modalContext';
 import { classNames } from 'src/utils/classnameJoin';
 
 interface MasterNodeProps extends NodeProps {
@@ -15,34 +16,7 @@ interface MasterNodeProps extends NodeProps {
 
 const MasterNode: React.FC<MasterNodeProps> = ({data}) => {
   const { nodes, } = useFlowContext();
-
-  const [budget, setBudget] = useState(data.budget || 0);
-
-  useEffect(() => {
-    // Supposons que data.remaining est calculé ailleurs et passé ici
-    // Cet effet est juste pour refléter les changements dans le state local
-    if (data.budget !== budget) {
-      setBudget(data.budget || 0);
-    }
-  }, [data.budget, budget]);
-
-  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newBudget = parseFloat(e.target.value);
-   // setBudget(isNaN(newBudget) ? 0 : newBudget);
-    // Ici, vous devez implémenter la logique pour mettre à jour le budget global dans l'état de l'application
-    // Cela peut impliquer de soulever cet état et de fournir une fonction de mise à jour en tant que prop
-  };
-
-
-  const client = {
-    
-      id: 1,
-      name: 'Tuple',
-      imageUrl: 'https://tailwindui.com/img/logos/48x48/tuple.svg',
-      lastInvoice: { date: 'December 13, 2022', dateTime: '2022-12-13', amount: '$2,000.00', status: 'Overdue' },
-  }
-  
-  
+  const { openModal } = useModalContext();
 
   return (
     <>
@@ -50,8 +24,8 @@ const MasterNode: React.FC<MasterNodeProps> = ({data}) => {
 
     <div className="flex items-center  gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6 border-2 rounded-t-lg">
             <img
-              src={client.imageUrl}
-              alt={client.name}
+              src="https://tailwindui.com/img/logos/48x48/tuple.svg"
+              alt="Master-img"
               className="h-12 w-12 flex-none rounded-lg object-cover ring-1 ring-gray-900/10"
             />
             <div className="text-sm  text-centerfont-medium leading-6 text-gray-900">Master</div>
@@ -59,7 +33,6 @@ const MasterNode: React.FC<MasterNodeProps> = ({data}) => {
               <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
                 <span className="sr-only">Open options</span>
                 <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
-                  {/* TODO: add modal */}
 
               </Menu.Button>
               <Transition
@@ -76,13 +49,14 @@ const MasterNode: React.FC<MasterNodeProps> = ({data}) => {
                   <Menu.Item>
                     {({ active }) => (
                       <a
+                      onClick={() => openModal(ModalType.Type1, { someProp: 'value' })}
                         href="#"
                         className={classNames(
                           active ? 'bg-gray-50' : '',
                           'block px-3 py-1 text-sm leading-6 text-gray-900'
                         )}
                       >
-                        Create<span className="sr-only">, {client.name}</span>
+                        Create
                       </a>
                     )}
                   </Menu.Item>
@@ -109,8 +83,10 @@ const MasterNode: React.FC<MasterNodeProps> = ({data}) => {
     style={{ background: '#555' }}
     isConnectable={true}
   />
+
   </>
   );
 };
+
 
 export default MasterNode;

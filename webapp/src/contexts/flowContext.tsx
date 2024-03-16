@@ -22,7 +22,7 @@ const departmentXSpacing = 450;
 
 const peopleStartY = 450;
 const peopleXSpacing = 220;
-const peopleYSpacing = 130;
+const peopleYSpacing = 140;
 
 export const FlowProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
