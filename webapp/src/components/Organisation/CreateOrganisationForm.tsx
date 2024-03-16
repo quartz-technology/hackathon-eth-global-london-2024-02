@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useCreateOrganisationMutation } from 'src/services/request/organisation';
 
 export default function CreateOrganisationForm() {
@@ -15,12 +15,15 @@ export default function CreateOrganisationForm() {
 		}
 
 		await trigger({ name });
-		console.log(data);
 	};
+
+	useEffect(() => {
+		console.log(data)
+	}, [data])
 
 	return (
 		<div className="w-full max-w-xs">
-			<form className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+			<div className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
 				<div className="mb-4">
 					<label className="mb-2 block text-sm font-bold text-gray-700" htmlFor="name">
 						Name
@@ -37,12 +40,12 @@ export default function CreateOrganisationForm() {
 				<div className="flex items-center justify-between">
 					<button
 						className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
-						onClick={async () => submit}
+						onClick={async () => { await submit() }}
 					>
 						Create
 					</button>
 				</div>
-			</form>
+			</div>
 		</div>
 	);
 }
