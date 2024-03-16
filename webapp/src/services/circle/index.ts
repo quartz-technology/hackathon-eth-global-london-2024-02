@@ -35,8 +35,6 @@ interface Organisation {
 export default class CircleUserSDK {
 	private client: ReturnType<typeof initiateUserControlledWalletsClient>;
 
-	private userToken?: string;
-
 	constructor(apiKey: string) {
 		this.client = initiateUserControlledWalletsClient({
 			apiKey,
