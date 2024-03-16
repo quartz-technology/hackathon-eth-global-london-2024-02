@@ -31,18 +31,19 @@ router.post("", bodyParser.json(), async (req, res, next) => {
   }
 });
 
-router.post("/add", bodyParser.json(), async (req, res, next) => {
-    const { groupID, userID } = req.body;
-    if (!groupID) {
-      return next(new Error("field groupID is missing from request body."));
-    }
-
+router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
+    const { userID } = req.body;
     if (!userID) {
       return next(new Error("field userID is missing from request body."));
     }
 
+    const groupID = req.params.groupID;
+    if (!groupID) {
+      return next(new Error("field groupID is missing from request body."));
+    }
+
     try {
-      const group = await ctx.prisma.group.findFirst({ where: { id: groupID } });
+      const group = await ctx.prisma.group.findFirst({ where: { id: Number(groupID) } });
       if (!group?.id) {
         return next(new Error(`group ${groupID} not found.`));
       }
@@ -56,6 +57,27 @@ router.post("/add", bodyParser.json(), async (req, res, next) => {
     } catch (error) {
       return next(new Error("could not join group.", { cause: error }));
     }
+})
+
+router.get("/:groupID", async (req, res, next) => {
+  const groupID = req.params.groupID;
+  if (!groupID) {
+    return next(new Error("field groupID is missing from request body."));
+  }
+
+  try {
+    const group = await ctx.prisma.group.findFirst({
+      where: { id: Number(groupID) },
+      include: { users: true, organisation: true },
+    });
+    if (!group?.id) {
+      return next(new Error(`group ${groupID} not found.`));
+    }
+
+    return res.status(httpStatus.OK).json({ ...group });
+  } catch (error) {
+    return next(new Error("could not get group.", { cause: error }));
+  }
 })
 
 export default router;

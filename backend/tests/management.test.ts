@@ -157,3 +157,148 @@ describe("Manage organisation flow", async () => {
     expect(orgUsers.length).toBe(3);
   })
 });
+
+describe("Manage group", async () => {
+  const masterName = `group-test-master-${uuidv4()}`;
+  const memberNames = [`group-test-member-${uuidv4()}`, `group-test-member-${uuidv4()}`];
+  const groupsNames =  [`group-test-${uuidv4()}`, `group-test-${uuidv4()}`];
+  const organisationName = `group-test-${uuidv4()}`;
+  const users: { [name: string]: CircleUser } = {};
+  const groups: { [name: string]: string } = {};
+  let organisationID: string;
+
+  test("Setup organisation", async () => {
+    for (const name of [masterName, ...memberNames]) {
+      const res = await supertest(app).post("/user/register").send({
+        name,
+      });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toHaveProperty("user");
+
+      users[name] = res.body.user;
+    }
+
+    const res = await supertest(app).post("/organisation").send({
+      name: organisationName,
+      userID: users[masterName].userID,
+    });
+
+    expect(res.status).toBe(201);
+
+    const organisation = res.body.organisation;
+    expect(organisation).toHaveProperty("id");
+    organisationID = organisation.id;
+
+    for (const name of memberNames) {
+      const res = await supertest(app).post(`/organisation/${organisationID}/add`).send({
+        userID: users[name].userID,
+      });
+
+      expect(res.status).toBe(200);
+    }
+  });
+
+  test("Master creates groups - POST /group", async () => {
+    for (const name of groupsNames) {
+      const res = await supertest(app).post("/group").send({
+        name,
+        userID: users[masterName].userID,
+        organisationID,
+      });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toHaveProperty("group");
+
+      const group = res.body.group;
+      expect(group).toHaveProperty("id");
+      expect(group).toHaveProperty("name", name);
+      groups[name] = group.id;
+    }
+  });
+
+  test("Check the master is in the groups - GET /group/:groupID", async () => {
+    for (const name of groupsNames) {
+      const res = await supertest(app).get(`/group/${groups[name]}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("id");
+      expect(res.body).toHaveProperty("name");
+      expect(res.body).toHaveProperty("users");
+      expect(res.body).toHaveProperty("organisation");
+
+      const group = res.body;
+      expect(group).toHaveProperty("id", groups[name]);
+      expect(group).toHaveProperty("name", name);
+      expect(group).toHaveProperty("users");
+
+      const groupUsers = group.users;
+      expect(groupUsers.length).toBe(1);
+      expect(groupUsers[0]).toHaveProperty("id", users[masterName].userID);
+      expect(groupUsers[0]).toHaveProperty("name", masterName);
+
+      const groupOrganisation = group.organisation;
+      expect(groupOrganisation).toHaveProperty("id", organisationID); 
+    }
+  });
+
+  test("Check the groups are in the organisation - GET /organisation/:organisationID", async () => {
+    const res = await supertest(app).get(`/organisation/${organisationID}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("organisation");
+
+    const organisation = res.body.organisation;
+    expect(organisation).toHaveProperty("id", organisationID);
+    expect(organisation).toHaveProperty("name", organisationName);
+    expect(organisation).toHaveProperty("users");
+    expect(organisation).toHaveProperty("groups");
+
+    const orgGroups = organisation.groups;
+    expect(orgGroups.length).toBe(2);
+
+    const orgUsers = organisation.users;
+    expect(orgUsers.length).toBe(3);
+  })
+
+  test("Add members to the groups - POST /group/:groupID/add", async () => {
+    for (const name of memberNames) {
+      for (const groupName of groupsNames) {
+        const res = await supertest(app).post(`/group/${groups[groupName]}/add`).send({
+          userID: users[name].userID,
+        });
+
+        expect(res.status).toBe(200);
+      }
+    }
+
+    for (const groupName of groupsNames) {
+      const res = await supertest(app).get(`/group/${groups[groupName]}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("users");
+
+      const groupUsers = res.body.users;
+      expect(groupUsers.length).toBe(3);
+    }
+  })
+
+  test("Check global organisation state - GET /organisation/:organisationID", async () => {
+    const res = await supertest(app).get(`/organisation/${organisationID}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("organisation");
+
+    const organisation = res.body.organisation;
+    expect(organisation).toHaveProperty("id", organisationID);
+    expect(organisation).toHaveProperty("name", organisationName);
+    expect(organisation).toHaveProperty("users");
+    expect(organisation).toHaveProperty("groups");
+
+    const orgGroups = organisation.groups;
+    expect(orgGroups.length).toBe(2);
+
+    const orgUsers = organisation.users;
+    expect(orgUsers.length).toBe(3);
+  })
+})
