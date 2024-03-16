@@ -1,9 +1,9 @@
-import { expect, test } from '@jest/globals';
+import { expect, test } from 'bun:test';
 
 import CircleUserSDK from './index';
 
 test('Initiliaze circle service', async () => {
-	const API_KEY = process.env.NEXT_PUBLIC_CIRCLE_API_KEY;
+	const API_KEY = Bun.env.CIRCLE_API_KEY;
 	if (!API_KEY) {
 		throw new Error('Circle API Key is not defined');
 	}
@@ -19,7 +19,7 @@ test('Initiliaze circle service', async () => {
 });
 
 test('Create a new organisation', async () => {
-	const API_KEY = process.env.NEXT_PUBLIC_CIRCLE_API_KEY;
+	const API_KEY = Bun.env.CIRCLE_API_KEY;
 	if (!API_KEY) {
 		throw new Error('Circle API Key is not defined');
 	}

@@ -2,35 +2,7 @@ import { initiateUserControlledWalletsClient } from '@circle-fin/user-controlled
 import { v4 as uuidv4 } from 'uuid';
 
 import { AccountType, Blockchain } from './constants';
-
-interface CreateOrganisationOptions {
-	name: string;
-}
-
-interface ConnectOrganisationOptions {
-	userID: string;
-}
-
-interface InitWalletOptions {
-	name: string;
-	session: OrganisationSession;
-}
-
-interface OrganisationSession {
-	userToken: string;
-	encryptionKey: string;
-}
-
-interface Wallet {
-	challengeID: string;
-}
-
-interface Organisation {
-	name: string;
-	userToken: string;
-	encryptionKey: string;
-	challengeID: string;
-}
+import type { ConnectOrganisationOptions, CreateOrganisationOptions, InitWalletOptions, Organisation, OrganisationSession, Wallet } from './types';
 
 export default class CircleUserSDK {
 	private client: ReturnType<typeof initiateUserControlledWalletsClient>;
