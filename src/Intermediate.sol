@@ -34,10 +34,22 @@ contract Intermediate {
         _;
     }
 
-    modifier withdrawVerification(address _ens_address, uint256 _requested_amount) {
-        // Is the user is in the subgroups
-        require(isMemberOfSubGroups(_ens_address, msg.sender) = true, "Error: you are not members of this subgroups");
+    modifier isMemberOfGroups(address _ens_address, address _user_address) {
+        uint256 members_length = sub_groups[_ens_address].members.length;
+        bool isMember = false;
 
+        for (uint256 i = 0; i < members_length; i++) {
+            if (sub_groups[_ens_address].members[i] = _user_address) {
+                isMember = true;
+                break;
+            }
+        }
+
+        require(isMember = true, "Error: you are not members of this subgroups");
+        _;
+    }
+
+    modifier withdrawVerification(address _ens_address, uint256 _requested_amount) {
         // Is the subgroups has enough founds to make the transaction
         require(sub_groups[_ens_address].balance_of >= _requested_amount, "Error: your subgroups doesn't have enough founds.");
         require(sub_groups[_ens_address].interval_allowance >= sub_groups[_ens_address].interval_claimed_balance + _requested_amount, "Error: your subgroups reach the interval limits");
@@ -61,15 +73,28 @@ contract Intermediate {
 
     //------------------------------------------UTILITY FUNCTION PART---------------------------------------------------
 
-    function isMemberOfSubGroups(address _ens_address, address _user_address) public views returns (bool) {
+    // TODO: this might be optimized
+    function removeAddressFromSubGroups(address _ens_address, address _user_address) public external isOwner {
+        require(isMemberOfSubGroups(_ens_address, _user_address) = true, "Error: the requested user is not in this group");
         uint256 members_length = sub_groups[_ens_address].members.length;
+        uint256 member_index;
 
         for (uint256 i = 0; i < members_length; i++) {
-            if (sub_groups[_ens_address].members[i]) {
-                return true;
+            if (sub_groups[_ens_address].members[i] = _user_address) {
+                member_index = i;
+                break;
             }
         }
 
-        return false;
+        arr[member_index] = arr[members_length - 1];
+        arr.pop();
+    }
+
+    //------------------------------------------GROUPS FOUNDS FUNCTION PART---------------------------------------------
+
+    function addFounds(address _ens_address) public external isOwner {
+    }
+
+    function withDrawFounds(address _ens_address) public external isMemberOfGroups(_ens_address, msg.sender) {
     }
 }
