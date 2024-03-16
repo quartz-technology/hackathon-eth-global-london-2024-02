@@ -29,7 +29,7 @@ router.post("/connect", bodyParser.json(), async (req, res, next) => {
   try {
     const session = await ctx.circleSDK.connectUser({ userID });
 
-    return res.status(httpStatus.OK).json({ message: "User connected!", session });
+    return res.status(httpStatus.OK).json({ message: "User connected!", user: { ...session, userID: userID } });
   } catch (error) {
     return next(new Error("could not connect to user.", { cause: error }));
   }
@@ -55,7 +55,7 @@ router.post("/register", bodyParser.json(), async (req, res, next) => {
       data: { id: circleUser.userID, name: req.body.name },
     });
 
-    return res.status(httpStatus.CREATED).json({ message: "User created!", circleUser });
+    return res.status(httpStatus.CREATED).json({ message: "User created!", user: circleUser });
   } catch (error) {
     return next(new Error("could not save user to database.", { cause: error }));
   }
@@ -73,7 +73,7 @@ router.get("/:userID/organisation", async (req, res, next) => {
       include: { organisations: true, groups: true },
     });
 
-    return res.status(httpStatus.OK).json({ userOrganisation });
+    return res.status(httpStatus.OK).json({ ...userOrganisation });
   } catch (error) {
     return next(new Error("could not get user organisation.", { cause: error }));
   }
@@ -88,7 +88,7 @@ router.get("/:userID", async (req, res, next) => {
   try {
     const user = await ctx.circleSDK.getUser(userID);
 
-    return res.status(httpStatus.OK).json({ user });
+    return res.status(httpStatus.OK).json({ user: user?.user });
   } catch (error) {
     return next(new Error("could not get user.", { cause: error }));
   }
