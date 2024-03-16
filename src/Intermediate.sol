@@ -61,19 +61,62 @@ contract Intermediate {
     /**
      * @dev Fetch members of a sub-groups by its address
      */
-    function getSubGroupsMembers(address _ens_address) external view returns (address[] memory) {
+    function getSubGroupsMembers(address _ens_address)
+    external view returns (address[] memory) {
         return sub_groups[_ens_address].members;
     }
 
     //------------------------------------------SETTERS FUNCTION PART---------------------------------------------------
 
-    function pushAddressToSubGroups(address _ens_address, address _user_address) external isOwner {
+    function pushAddressToSubGroups(address _ens_address, address _user_address)
+    external isOwner {
+        uint256 members_length = sub_groups[_ens_address].members.length;
+        bool isMember = false;
+
+        for (uint256 i = 0; i < members_length; i++) {
+            if (sub_groups[_ens_address].members[i] == _user_address) {
+                isMember = true;
+                break;
+            }
+        }
+
+        require(isMember = false, "Error: This member is already in the groups");
         sub_groups[_ens_address].members.push(_user_address);
     }
 
     //------------------------------------------UTILITY FUNCTION PART---------------------------------------------------
 
-    function removeAddressFromSubGroups(address _ens_address, address _user_address) external isOwner isMemberOfGroups(_ens_address, _user_address) {
+    function createSubGroup(
+        address[] calldata _members,
+        address _subgroup_ens_address,
+        uint256 _interval_allowance,
+        AllowanceDelays _allowance_delay
+    ) external isOwner {
+        sub_groups[_subgroup_ens_address] = SubGroupsStruct({
+            members: _members,
+            last_claim_date: block.timestamp,
+            balance_of: 0,
+            interval_allowance: _interval_allowance,
+            interval_claimed_balance: 0,
+            allowance_delay: _allowance_delay
+        });
+    }
+
+    function updateSubGroup(address _subgroup_address, uint256 _interval_allowance, AllowanceDelays _allowance_delay)
+    external isOwner {
+        require(sub_groups[_subgroup_address].last_claim_date != 0, "Error: The subgroup does not exist.");
+
+        if (_intervalAllowance != 0) {
+            sub_groups[_subgroup_address].interval_allowance = _interval_allowance;
+        }
+
+        if (_allowance_delay != 0) {
+            sub_groups[_subgroup_address].allowance_delay = _allowance_delay;
+        }
+    }
+
+    function removeAddressFromSubGroups(address _ens_address, address _user_address)
+    external isOwner isMemberOfGroups(_ens_address, _user_address) {
         uint256 members_length = sub_groups[_ens_address].members.length;
         uint256 member_index;
 
@@ -88,7 +131,7 @@ contract Intermediate {
         sub_groups[_ens_address].members.pop();
     }
 
-    //------------------------------------------GROUPS FOUNDS FUNCTION PART---------------------------------------------
+    //------------------------------------------GROUPS FUNCTION PART----------------------------------------------------
 
 //    function addFounds(address _ens_address) public external isOwner {
 //    }
