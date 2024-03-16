@@ -19,10 +19,10 @@ contract Intermediate {
     }
 
     address public contract_master; // The owner of the organisation
-    string public ens_name_master; // The base Ens of the organisation
+    address public ens_name_master; // The base Ens of the organisation
     mapping(address => SubGroupsStruct) public sub_groups; // Contains the list of sub-groups and their right
 
-    constructor(string memory _caller, string memory _ens_name_master) {
+    constructor(address _caller, address _ens_name_master) {
         contract_master = _caller;
         ens_name_master = _ens_name_master;
     }
@@ -39,7 +39,7 @@ contract Intermediate {
         bool isMember = false;
 
         for (uint256 i = 0; i < members_length; i++) {
-            if (sub_groups[_ens_address].members[i] = _user_address) {
+            if (sub_groups[_ens_address].members[i] == _user_address) {
                 isMember = true;
                 break;
             }
@@ -61,40 +61,38 @@ contract Intermediate {
     /**
      * @dev Fetch members of a sub-groups by its address
      */
-    function getSubGroupsMembers(address _ens_address) public external view returns (address[]) {
+    function getSubGroupsMembers(address _ens_address) external view returns (address[] memory) {
         return sub_groups[_ens_address].members;
     }
 
     //------------------------------------------SETTERS FUNCTION PART---------------------------------------------------
 
-    function pushAddressToSubGroups(address _ens_address, address _user_address) public external isOwner {
+    function pushAddressToSubGroups(address _ens_address, address _user_address) external isOwner {
         sub_groups[_ens_address].members.push(_user_address);
     }
 
     //------------------------------------------UTILITY FUNCTION PART---------------------------------------------------
 
-    // TODO: this might be optimized
-    function removeAddressFromSubGroups(address _ens_address, address _user_address) public external isOwner {
-        require(isMemberOfSubGroups(_ens_address, _user_address) = true, "Error: the requested user is not in this group");
+    function removeAddressFromSubGroups(address _ens_address, address _user_address) external isOwner isMemberOfGroups(_ens_address, _user_address) {
         uint256 members_length = sub_groups[_ens_address].members.length;
         uint256 member_index;
 
         for (uint256 i = 0; i < members_length; i++) {
-            if (sub_groups[_ens_address].members[i] = _user_address) {
+            if (sub_groups[_ens_address].members[i] == _user_address) {
                 member_index = i;
                 break;
             }
         }
 
-        arr[member_index] = arr[members_length - 1];
-        arr.pop();
+        sub_groups[_ens_address].members[member_index] = sub_groups[_ens_address].members[members_length - 1];
+        sub_groups[_ens_address].members.pop();
     }
 
     //------------------------------------------GROUPS FOUNDS FUNCTION PART---------------------------------------------
 
-    function addFounds(address _ens_address) public external isOwner {
-    }
-
-    function withDrawFounds(address _ens_address) public external isMemberOfGroups(_ens_address, msg.sender) {
-    }
+//    function addFounds(address _ens_address) public external isOwner {
+//    }
+//
+//    function withDrawFounds(address _ens_address) public external isMemberOfGroups(_ens_address, msg.sender) {
+//    }
 }
