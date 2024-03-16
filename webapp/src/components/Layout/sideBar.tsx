@@ -8,7 +8,7 @@ const mylogo = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuHBOvXVQS
 
 const navigation = [{ name: 'Dashboard', href: '/', icon: HomeIcon }];
 
-const teams = [{ name: 'Empty', href: '/sub', initial: 'E' }];
+const teams = [{ name: 'Create Organisation', href: '/org', initial: 'C' }];
 
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(' ');
@@ -251,10 +251,12 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 						<span className="sr-only">Open sidebar</span>
 						<Bars3Icon className="h-6 w-6" aria-hidden="true" />
 					</button>
-					{navigation.map((item) => {
+					{navigation.map((item, i) => {
 						if (isLinkActive(item.href))
 							return (
-								<div className="flex-1 text-sm font-semibold leading-6 text-gray-900">{item.name}</div>
+								<div className="flex-1 text-sm font-semibold leading-6 text-gray-900" key={i}>
+									{item.name}
+								</div>
 							);
 						return <></>;
 					})}
