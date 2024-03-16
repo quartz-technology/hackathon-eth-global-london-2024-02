@@ -106,11 +106,11 @@ contract Intermediate {
     external isOwner {
         require(sub_groups[_subgroup_address].last_claim_date != 0, "Error: The subgroup does not exist.");
 
-        if (_intervalAllowance != 0) {
+        if (_interval_allowance != 0) {
             sub_groups[_subgroup_address].interval_allowance = _interval_allowance;
         }
 
-        if (_allowance_delay != 0) {
+        if (_allowance_delay != AllowanceDelays.NONE) {
             sub_groups[_subgroup_address].allowance_delay = _allowance_delay;
         }
     }
