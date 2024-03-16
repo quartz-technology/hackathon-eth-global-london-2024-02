@@ -1,0 +1,25 @@
+{
+  "projectName": "open-source-template",
+  "projectOwner": "Milkyway Technology",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "lcarneli",
+      "name": "Lorenzo Carneli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25481821?v=4",
+      "profile": "https://github.com/lcarneli",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
