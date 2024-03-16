@@ -6,28 +6,29 @@ import httpStatus from "http-status";
 
 const router = Router();
 
-router.post("/join", bodyParser.json(), async (req, res, next) => {
-  const { name, userID } = req.body;
-  if (!name) {
-    return next(new Error("field name is missing from request body."));
-  }
-
+router.post("/:organisationID/add", bodyParser.json(), async (req, res, next) => {
+  const { userID } = req.body;
   if (!userID) {
     return next(new Error("field userID is missing from request body."));
   }
 
+  const organisationID = req.params.organisationID;
+  if (!organisationID) {
+    return next(new Error("field organisationID is missing from URL."));
+  }
+
   try {
-    const org = await ctx.prisma.organisation.findFirst({ where: { name: name } });
-    if (!org?.id) {
-      return next(new Error(`organisation ${name} not found.`));
+    const organisation = await ctx.prisma.organisation.findFirst({ where: { id: Number(organisationID) } });
+    if (!organisation?.id) {
+      return next(new Error(`organisation ${organisationID} not found.`));
     }
 
     await ctx.prisma.organisation.update({
-      where: { id: org.id },
+      where: { id: organisation.id },
       data: { users: { connect: [{ id: userID }] } },
     });
 
-    return res.status(httpStatus.OK).json({ message: "User joined organisation!", org });
+    return res.status(httpStatus.OK).json({ message: "User joined organisation!", organisation });
   } catch (error) {
     return next(new Error("could not join organisation.", { cause: error }));
   }
@@ -44,11 +45,11 @@ router.post("", bodyParser.json(), async (req, res, next) => {
   }
 
   try {
-    const org = await ctx.prisma.organisation.create({
+    const organisation = await ctx.prisma.organisation.create({
       data: { name: name, users: { connect: [{ id: userID }] } },
     });
 
-    return res.status(httpStatus.CREATED).json({ message: "Organisation created!", org });
+    return res.status(httpStatus.CREATED).json({ message: "Organisation created!", organisation });
   } catch (error) {
     return next(new Error("could not create organisation.", { cause: error }));
   }
@@ -61,15 +62,15 @@ router.get("/:organisationID", async (req, res, next) => {
   }
 
   try {
-    const org = await ctx.prisma.organisation.findFirst({
+    const organisation = await ctx.prisma.organisation.findFirst({
       where: { id: Number(organisationID) },
       include: { groups: true, users: true },
     });
-    if (!org?.id) {
+    if (!organisation?.id) {
       return next(new Error(`organisation ${organisationID} not found.`));
     }
 
-    return res.status(httpStatus.OK).json({ message: "Organisation found!", org });
+    return res.status(httpStatus.OK).json({ message: "Organisation found!", organisation });
   } catch (error) {
     return next(new Error("could not find organisation.", { cause: error }));
   }
