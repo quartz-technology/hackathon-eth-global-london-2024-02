@@ -2,9 +2,9 @@ import { Router } from "express";
 import bodyParser from "body-parser";
 import { validateRequest } from "zod-express-middleware";
 import { z } from "zod";
+import httpStatus from "http-status";
 
 import ctx from "@context";
-import httpStatus from "http-status";
 import middlewares from "@middlewares";
 
 const router = Router();

@@ -9,8 +9,6 @@ import type {
   OwnContractOptions,
 } from "./types";
 
-const CONTRACT_ADDRESS = "0x80F2b980eeCAF31e8f9d2c9DDf7cdD565830E530";
-
 /**
  * The SDK for interacting with the contract.
  *
@@ -19,8 +17,11 @@ const CONTRACT_ADDRESS = "0x80F2b980eeCAF31e8f9d2c9DDf7cdD565830E530";
 export default class ContractSDK {
   private readonly apiKey: string;
 
-  constructor(apiKey: string) {
+  private readonly address: string;
+
+  constructor(apiKey: string, address: string) {
     this.apiKey = apiKey;
+    this.address = address;
   }
 
   async execute(caller: ContractCaller, opts: ExecuteOptions) {
@@ -37,7 +38,7 @@ export default class ContractSDK {
       },
       body: JSON.stringify({
         idempotencyKey: ContractSDK.generateUUID(),
-        contractAddress: CONTRACT_ADDRESS,
+        contractAddress: this.address,
         walletId: caller.walletID,
         abiFunctionSignature: opts.ABIFunctionSignature,
         abiParameters: opts.ABIParameters,

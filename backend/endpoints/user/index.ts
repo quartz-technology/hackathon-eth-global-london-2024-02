@@ -5,10 +5,8 @@ import { validateRequest } from "zod-express-middleware";
 import { z } from "zod";
 
 import ctx from "@context";
-import type { User as CircleUser } from "@service/circle/types";
-import type { Session } from "@service/circle";
-
 import middlewares from "@middlewares";
+import type { Session, User as CircleUser } from "@service/circle";
 
 const router = Router();
 

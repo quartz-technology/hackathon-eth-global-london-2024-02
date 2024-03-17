@@ -24,7 +24,7 @@ export function init() {
     console.debug("Initializing context...")
 
     context.circleSDK = new CircleUserSDK(config.circleAPIKey)
-    context.contractSDK = new ContractSDK(config.circleAPIKey)
+    context.contractSDK = new ContractSDK(config.circleAPIKey, config.contractAddress)
     context.prisma = new PrismaClient()
 
     console.log("Context initialized!")
