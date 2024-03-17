@@ -4,6 +4,8 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
 import { useFlowContext } from 'src/contexts/flowContext';
 import { ModalType, useModalContext } from 'src/contexts/modalContext';
+import { UseUserClient } from 'src/hooks/user/userClient';
+import { useGetUserOrganisationQuery } from 'src/services/request/user';
 import { classNames } from 'src/utils/classnameJoin';
 
 interface MasterNodeProps extends NodeProps {
@@ -65,11 +67,20 @@ const MasterNode: React.FC<MasterNodeProps> = ({data}) => {
             </Menu>
           </div>
           <dl className=" divide-y divide-gray-100 px-6 py-4 text-sm leading-6 rounded-b-lg border-b-2 border-x-2 ">
-            <div className="flex justify-between ">
-              <dt className="text-gray-500">Number Department</dt>
-              <dd className="text-gray-700">
-                <span>{nodes.filter(node => node.id.includes("department")).length}</span>
-              </dd>
+            <div className="flex-col justify-between ">
+              <div className="flex justify-between">
+                <dt className="text-gray-500">Number Department</dt>
+                <dd className="text-gray-700">
+                  <span>{nodes.filter(node => node.id.includes("department")).length}</span>
+                </dd>
+              </div>
+
+              <div className="flex justify-between">
+                <dt className="text-gray-500">Org ID</dt>
+                <dd className="text-gray-700">
+                  <span>{"ID"}</span>
+                </dd>
+              </div>
             </div>
 
           </dl>

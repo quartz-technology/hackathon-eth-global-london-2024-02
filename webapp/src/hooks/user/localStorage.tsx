@@ -4,6 +4,7 @@ import * as cryptoUtf8 from 'crypto-js/enc-utf8';
 
 export enum LocalStorageLabel {
 	User = 'user',
+	Org = 'org'
 }
 
 const encryptData = (data: string) => {
