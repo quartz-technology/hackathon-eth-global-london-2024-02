@@ -27,6 +27,8 @@ Combining with Circle API gives a simple abstraction around wallets so you can p
 
 BudAl is an accessible solution to democratize cryptocurrency usage around businesses.
 
+To simplify management we also create an ENS domain for the organisation and its group.
+
 ## Launch the project
 
 ### Deploy the contract

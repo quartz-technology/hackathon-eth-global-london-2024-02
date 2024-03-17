@@ -40,7 +40,7 @@ export function createApp(): express.Application {
       secret: "fXpfFgRHRGBFDG",
       resave: true,
       saveUninitialized: false,
-      cookie: { secure: false, maxAge: 60000, httpOnly: false },
+      cookie: { secure: false, maxAge: 6000000, httpOnly: false },
       store: redisStore,
     })
   );
