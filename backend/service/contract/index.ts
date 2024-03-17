@@ -68,13 +68,13 @@ export default class ContractSDK {
   async ownContract(caller: ContractCaller, opts: OwnContractOptions) {
     try {
       const challengeID = await this.execute(caller, {
-        ABIFunctionSignature: "claimContract(address)",
+        ABIFunctionSignature: "claimContract(string)",
         ABIParameters: [opts.walletAddress],
       });
 
       return challengeID;
     } catch (error) {
-      throw new Error("call to claimContract(address) failed", { cause: error });
+      throw new Error("call to claimContract(string) failed", { cause: error });
     }
   }
 
@@ -88,7 +88,7 @@ export default class ContractSDK {
   async createGroup(caller: ContractCaller, opts: CreateGroupOptions) {
     try {
       const challengeID = await this.execute(caller, {
-        ABIFunctionSignature: "createSubGroup(address, uint256, uint8)",
+        ABIFunctionSignature: "createSubGroup(string, uint256, uint8)",
         ABIParameters: [ opts.groupAddress, opts.allocation, opts.delays],
       });
 
@@ -108,7 +108,7 @@ export default class ContractSDK {
   async addUserToGroup(caller: ContractCaller, opts: AddUserToGroupOptions) {
     try {
       const challengeID = await this.execute(caller, {
-        ABIFunctionSignature: "pushAddressToSubGroups(address, address)",
+        ABIFunctionSignature: "pushAddressToSubGroups(string, address)",
         ABIParameters: [opts.groupAddress, opts.userAddress],
       });
 
@@ -121,7 +121,7 @@ export default class ContractSDK {
   async addFound(caller: ContractCaller, opts: AddFoundOptions) {
     try {
       const challengeID = await this.execute(caller, {
-        ABIFunctionSignature: "addFound(address, uint256)",
+        ABIFunctionSignature: "addFound(string, uint256)",
         ABIParameters: [opts.groupAddress, opts.amount],
       });
 
@@ -134,7 +134,7 @@ export default class ContractSDK {
   async withDraw(caller: ContractCaller, opts: WithDrawOptions) {
     try {
       const challengeID = await this.execute(caller, {
-        ABIFunctionSignature: "withdraw(address, uint256)",
+        ABIFunctionSignature: "withdraw(string, uint256)",
         ABIParameters: [opts.groupAddress, opts.amount],
       });
 

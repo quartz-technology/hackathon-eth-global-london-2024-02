@@ -108,7 +108,7 @@ router.post(
           userToken: req.session.userToken as string,
         },
         {
-          walletAddress: req.session.walletAddress as string,
+          walletAddress: ensName,
         }
       );
     } catch (error) {

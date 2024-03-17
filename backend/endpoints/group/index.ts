@@ -75,7 +75,7 @@ router.post(
           userToken: req.session.userToken as string,
         },
         {
-          groupAddress: walletAddress,
+          groupAddress: ensName,
           allocation: allocation,
           delays: 0,
         }
