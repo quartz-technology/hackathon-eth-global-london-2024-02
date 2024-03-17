@@ -33,7 +33,7 @@ bunx prisma generate
 Start the backend:
 
 ```shell
-bun run index.ts
+tsx index.ts
 ```
 
 ## Testing
