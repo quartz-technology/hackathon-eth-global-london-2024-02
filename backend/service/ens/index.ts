@@ -64,6 +64,8 @@ export default class EnsSDK {
       let parentName = "budal.eth"
       if (parent) {
         parentName = parent + ".budal.eth"
+      } else {
+        walletAddress = this.wallet!.account!.address!
       }
 
       console.log(parentName, namehash(parentName), name, walletAddress, 0, 0, ENS_RESOLVER, ENS_EXPIRATION,)

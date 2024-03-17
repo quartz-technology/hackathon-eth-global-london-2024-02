@@ -60,12 +60,11 @@ router.post(
 
     console.debug(`Registering ENS domain ${ensName}`)
     // Register the subdomain
-    // Disable sub domain ENS creation, it's broken for unknown reason
-    // try {
-    //   await ctx.ensSDK.registerENSAddress(name, walletAddress, organisation.name);
-    // } catch (error) {
-    //   return next(new Error("could not register the group name.", { cause: error }));
-    // }
+    try {
+      await ctx.ensSDK.registerENSAddress(name, walletAddress, organisation.name);
+    } catch (error) {
+      return next(new Error("could not register the group name.", { cause: error }));
+    }
 
     console.debug(`Creating group ${name} in organisation ${organisation.name} in the contract`)
     let challengeID: string;
