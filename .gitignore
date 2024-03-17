@@ -1,0 +1,5 @@
+/.idea/.gitignore
+/.idea/ethglobal_london_2024.iml
+/.idea/modules.xml
+/backend/package-lock.json
+/.idea/vcs.xml

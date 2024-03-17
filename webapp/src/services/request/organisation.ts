@@ -12,11 +12,11 @@ const extendedApi = backendApi.injectEndpoints({
 		}),
 		invalidatesTags: ['Organisation'],
 	  }),
-	  addUserToOrganisation: builder.mutation<void, { organisationID: number, userID: string }>({
-		query: ({ organisationID, userID }) => ({
+	  addUserToOrganisation: builder.mutation<void, { organisationID: number, username: string }>({
+		query: ({ organisationID, username }) => ({
 		  url: `/organisation/${organisationID}/add`,
 		  method: 'POST',
-		  body: { userID },
+		  body: { username },
 		  credentials: 'include',
 		}),
 		invalidatesTags: ['Organisation'],
@@ -32,5 +32,5 @@ const extendedApi = backendApi.injectEndpoints({
 	}),
   });
   
-  export const { useCreateOrganisationMutation, useAddUserToOrganisationMutation, useGetOrganisationByIdQuery } = extendedApi;
+  export const { useCreateOrganisationMutation, useAddUserToOrganisationMutation, useLazyGetOrganisationByIdQuery } = extendedApi;
   
