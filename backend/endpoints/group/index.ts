@@ -106,6 +106,8 @@ router.post(
  * This method also call the smart contract to add the user wallet to the group.
  * NOTE: this method must be called by the contract owner only!
  * If we had time, we would implement a verification system but we don't.
+ * 
+ * This also create a sub ENS domain for the group (.e.g, <group>.<orga>.budal.eth)
  */
 router.post(
   "/:groupID/add",
@@ -190,7 +192,6 @@ router.post(
           amount: amount,
         }
       );
-
       return res.status(httpStatus.OK).json({ message: "Add found request created!", challengeID });
     } catch (error) {
       return next(new Error("could not create group on contract.", { cause: error }));

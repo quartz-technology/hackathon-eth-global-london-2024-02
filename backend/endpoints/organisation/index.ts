@@ -60,6 +60,8 @@ router.post(
  * We could also add more metadata related to the organisation, such as the address, the industry, etc...
  *
  * The users shall also have a valid wallet on Circle API before performing this operation.
+ * 
+ * This also creates a sub domain for the organisation on ENS (.e.g, <orga>.budal.eth)
  */
 router.post(
   "",
