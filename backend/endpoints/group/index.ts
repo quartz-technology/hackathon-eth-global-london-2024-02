@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import ctx from "@context";
 import middlewares from "@middlewares";
+import type { Organisation } from "@prisma/client";
 
 const router = Router();
 
@@ -30,6 +31,36 @@ router.post(
   }),
   async (req, res, next) => {
     const { name, organisationID, allocation } = req.body;
+    const walletAddress = req.session.walletAddress as string;
+
+    let organisation: Organisation | null;
+    try {
+      organisation = await ctx.prisma.organisation.findFirst({ where: { id: organisationID } });
+      if (!organisation?.id) {
+        return next(new Error(`organisation ${organisationID} not found.`));
+      }
+    } catch (error) {
+      return next(new Error("could not get organisation.", { cause: error }));
+    }
+
+    const ensName = ctx.ensSDK.addBudalSuffix(`${name}.${organisation.name}`);
+
+    // Check if ENS domain is available
+    try {
+      const isNameAvailable = await ctx.ensSDK.isENSAvailable(ensName);
+      if (!isNameAvailable) {
+        return next(new Error(`organisation name ${ensName} is not available.`));
+      }
+    } catch (error) {
+      return next(new Error("could not check if organisation name is available.", { cause: error }));
+    }
+
+    // Register the subdomain
+    try {
+      await ctx.ensSDK.registerENSAddress(name, walletAddress, organisation.name);
+    } catch (error) {
+      return next(new Error("could not register the group name.", { cause: error }));
+    }
 
     let challengeID: string;
     try {
@@ -39,8 +70,7 @@ router.post(
           userToken: req.session.userToken as string,
         },
         {
-          // TODO(): Dynamic ENS
-          groupAddress: "0x1e6754B227C6ae4B0ca61D82f79D60660737554a",
+          groupAddress: walletAddress,
           allocation: allocation,
           delays: 0,
         }
@@ -53,7 +83,7 @@ router.post(
       const group = await ctx.prisma.group.create({
         data: {
           name: name,
-          address: name,
+          address: ensName,
           users: { connect: [{ id: req.session.userID as string }] },
           organisation: { connect: { id: organisationID } },
         },
@@ -200,7 +230,7 @@ router.post(
       return next(new Error("could not create group on contract.", { cause: error }));
     }
   }
-)
+);
 
 /**
  * Get a group by its ID.

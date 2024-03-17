@@ -53,7 +53,7 @@ export default class EnsSDK {
     return `${name}.budal.eth`;
   }
 
-  async registerENSAddress(name: string, walletAddress: string): Promise<void> {
+  async registerENSAddress(name: string, walletAddress: string, parent?: string): Promise<void> {
     try {
       const contract = getContract({
         address: ENS_ADDRESS as Address,
@@ -61,7 +61,12 @@ export default class EnsSDK {
         client: this.wallet,
       });
 
-      console.log(namehash("budal.eth"), name, walletAddress, 0, 0, ENS_RESOLVER, ENS_EXPIRATION,)
+      let parentName = "budal.eth"
+      if (parent) {
+        parentName = parent + ".budal.eth"
+      }
+
+      console.log(namehash(parentName), name, walletAddress, 0, 0, ENS_RESOLVER, ENS_EXPIRATION,)
 
       await contract.write.setSubnodeRecord([namehash("budal.eth"), name, walletAddress, ENS_RESOLVER, 0, 0, ENS_EXPIRATION]);
     } catch (error) {

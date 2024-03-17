@@ -2,7 +2,7 @@ import type { Response } from "express";
 
 export function isLoggedIn(req: any, res: Response, next: any) {
     if (req.session.userID && req.session.userToken && req.session.walletID && req.session.walletAddress) {
-        console.debug("User is logged in.")
+        console.debug("User is logged in.", req.session.walletAddress)
         next();
     } else {
         console.debug("User is not logged in.", req.session.userID, req.session.userToken, req.session.walletID, req.session.walletAddress)
