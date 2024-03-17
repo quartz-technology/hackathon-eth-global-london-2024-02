@@ -35,7 +35,7 @@ interface Group {
   // Request payloads
   export interface CreateGroupRequest {
     name: string;
-    organisationID: string;
+    organisationID: number;
     allocation: number;
   }
   
