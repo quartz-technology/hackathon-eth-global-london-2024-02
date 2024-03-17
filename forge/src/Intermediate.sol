@@ -24,10 +24,10 @@ contract Intermediate {
     IERC20 public usdc_erc_20 = IERC20(0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238); // Sepolia USDC
 
     address public contract_master; // The owner of the organisation
-    address public ens_name_master; // The base Ens of the organisation
-    mapping(address => SubGroupsStruct) public sub_groups; // Contains the list of sub-groups and their right
+    string public ens_name_master; // The base Ens of the organisation
+    mapping(string => SubGroupsStruct) public sub_groups; // Contains the list of sub-groups and their right
 
-    function claimContract(address _ens_name_master) external {
+    function claimContract(string memory _ens_name_master) external {
         contract_master = msg.sender;
         ens_name_master = _ens_name_master;
     }
@@ -39,7 +39,7 @@ contract Intermediate {
         _;
     }
 
-    modifier isMemberOfGroups(address _ens_address, address _user_address) {
+    modifier isMemberOfGroups(string memory _ens_address, address _user_address) {
         uint256 members_length = sub_groups[_ens_address].members.length;
         bool isMember = false;
 
@@ -54,7 +54,7 @@ contract Intermediate {
         _;
     }
 
-    modifier withdrawVerification(address _ens_address, uint256 _requested_amount) {
+    modifier withdrawVerification(string memory _ens_address, uint256 _requested_amount) {
         // First of all, reset the remains balance
         if (sub_groups[_ens_address].allowance_delay == AllowanceDelays.EVERY_24_HOURS
             && sub_groups[_ens_address].last_claim_date + 24 hours >= block.timestamp) {
@@ -83,14 +83,14 @@ contract Intermediate {
     /**
      * @dev Fetch members of a sub-groups by its address
      */
-    function getSubGroupsMembers(address _ens_address)
+    function getSubGroupsMembers(string memory _ens_address)
     external view returns (address[] memory) {
         return sub_groups[_ens_address].members;
     }
 
     //------------------------------------------SETTERS FUNCTION PART---------------------------------------------------
 
-    function pushAddressToSubGroups(address _ens_address, address _user_address)
+    function pushAddressToSubGroups(string memory _ens_address, address _user_address)
     external isOwner {
         uint256 members_length = sub_groups[_ens_address].members.length;
         bool isMember = false;
@@ -109,7 +109,7 @@ contract Intermediate {
     //------------------------------------------UTILITY FUNCTION PART---------------------------------------------------
 
     function createSubGroup(
-        address _subgroup_ens_address,
+        string memory _subgroup_ens_address,
         uint256 _interval_allowance,
         AllowanceDelays _allowance_delay
     ) external isOwner {
@@ -125,7 +125,7 @@ contract Intermediate {
         });
     }
 
-    function updateSubGroup(address _subgroup_address, uint256 _interval_allowance, AllowanceDelays _allowance_delay)
+    function updateSubGroup(string memory _subgroup_address, uint256 _interval_allowance, AllowanceDelays _allowance_delay)
     external isOwner {
         require(sub_groups[_subgroup_address].last_claim_date != 0, "Error: The subgroup does not exist.");
 
@@ -138,7 +138,7 @@ contract Intermediate {
         }
     }
 
-    function removeAddressFromSubGroups(address _ens_address, address _user_address)
+    function removeAddressFromSubGroups(string memory _ens_address, address _user_address)
     external isOwner isMemberOfGroups(_ens_address, _user_address) {
         uint256 members_length = sub_groups[_ens_address].members.length;
         uint256 member_index;
@@ -157,14 +157,14 @@ contract Intermediate {
     //------------------------------------------GROUPS FUNCTION PART----------------------------------------------------
 
     // TODO: create a safe _msgSender()
-    function addFounds(address _ens_address, uint256 _amount)
+    function addFounds(string memory _ens_address, uint256 _amount)
     external isOwner checkAllowance(_amount) {
         usdc_erc_20.transferFrom(msg.sender, address(this), _amount);
 
         sub_groups[_ens_address].balance_of += _amount;
     }
 
-    function withDrawFounds(address _ens_address, uint256 _amount)
+    function withDrawFounds(string memory _ens_address, uint256 _amount)
     external isMemberOfGroups(_ens_address, msg.sender) withdrawVerification(_ens_address, _amount) {
         sub_groups[_ens_address].last_claim_date = block.timestamp;
         sub_groups[_ens_address].interval_remains_balance -= _amount;

@@ -7,7 +7,6 @@ import {useAddUserToGroupMutation} from "../../services/request/group";
 import { W3SSdk } from '@circle-fin/w3s-pw-web-sdk'
 import {
     useAddUserToOrganisationMutation,
-    useGetOrganisationByIdQuery,
     useLazyGetOrganisationByIdQuery
 } from "../../services/request/organisation";
 
@@ -19,6 +18,7 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
     const { addPeopleNode } = useFlowContext();
 
     const [name, setName] = useState('');
+    const [groupName, setGroupName] = useState('');
 
     const { userConnectResponse } = useUserContext();
     const {data: userOrganisation } = useGetUserOrganisationQuery(undefined, {skip: !userConnectResponse});
@@ -38,7 +38,6 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
     const addUserToOrga = async () => {
         if (!userOrganisation) return;
 
-
         // await triggerAddtoOrg({username: name, organisationID: userOrganisation.organisations[0].id});
 
         const res = await triggerGetOrgaDetails({organisationID: userOrganisation.organisations[0].id});
@@ -51,11 +50,10 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
     const handleSaveChanges = async () => {
         // Ici, vous pouvez appeler une API ou effectuer d'autres actions avec les valeurs de l'état
           if (!userOrganisation) return;
-          const fetchRes = await triggerAddGroup({groupID: someProp.id, groupAddress: '0x1e6754B227C6ae4B0ca61D82f79D60660737554a', targetID: name});
+          const fetchRes = await triggerAddGroup({groupID: someProp.id, groupAddress: groupName, targetID: name});
           setChallenge((fetchRes as any).data.challengeID)
         closeModal();
     };
-
     const finalize = async () => {
         console.log(userConnectResponse)
         console.log(challenge)
@@ -98,6 +96,19 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          placeholder="username"
+                      />
+                  </div>
+
+                  <div className="mt-6">
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                      <input
+                          type="text"
+                          name="groupName"
+                          id="groupName"
+                          value={groupName}
+                          onChange={(e) => setGroupName(e.target.value)}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           placeholder="e.g., mysubgroup.eth"
                       />
                   </div>
@@ -120,7 +131,6 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
                   </div>
               </div>
           </>}
-
       </>
   );
 };
