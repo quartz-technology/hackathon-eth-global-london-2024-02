@@ -6,7 +6,8 @@ The Budal API abstracts the logic of budget allocation using the [Circle API](ht
 
 ### Requirements
 
--  [Bun](https://bun.sh/): We use Bun runtime to run the code.
+- [Bun](https://bun.sh/): We use Bun runtime to run the code.
+- [Tsx]: The runner binary because Bun does not fully support express session. 
 
 ### Install dependencies
 
