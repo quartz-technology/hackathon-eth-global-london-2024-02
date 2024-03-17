@@ -28,6 +28,12 @@ We use SQLite and Prisma to store persistent data, please generate the client be
 bunx prisma generate
 ```
 
+### Start the Redis server
+
+```
+./scripts/start-redis.sh
+```
+
 ### Run the backend
 
 Start the backend:
