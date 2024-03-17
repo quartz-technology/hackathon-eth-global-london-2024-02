@@ -1,66 +1,37 @@
-## Foundry
+# Budal Smart Contract
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+The Budal Smart Contract contains the core logic of the project to manage organisation and sub-organisations funds.
 
-Foundry consists of:
+## Quickstart
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+### Requirements
+
+- [Foundry](https://book.getfoundry.sh/getting-started/installation)
+
+### Install dependencies
+
+```bash
+forge install OpenZeppelin/openzeppelin-contracts
+```
+we use the IERC20 from OpenZeppelin to integrate payment in token
+
+### build the project
+
+```bash
+forge build
+```
+
+### Deploy the contract
+
+we recommend to deploy the contract on Sepolia, because we use the USDC ERC20 token address from the Sepolia network
+as a reference in the `Intermediate.sol` contract.
+
+```bash
+forge create --rpc-url <Rpc Url> --private-key <Private Key> src/Intermediate.sol:Intermediate
+```
 
 ## Documentation
 
-https://book.getfoundry.sh/
+The contract is documented, explore the code to see it :)
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Made with ❤️ by [Quartz](https://www.quartz.technology/)

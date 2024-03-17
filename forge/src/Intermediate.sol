@@ -21,12 +21,15 @@ contract Intermediate {
         AllowanceDelays allowance_delay;            // During how much time founds are lock between each withdraws
     }
 
-    IERC20 public usdc_erc_20 = IERC20(0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238); // Sepolia USDC
+    IERC20 public usdc_erc_20 = IERC20(0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238); // Sepolia USDC ERC20 address
 
     address public contract_master; // The owner of the organisation
     string public ens_name_master; // The base Ens of the organisation
     mapping(string => SubGroupsStruct) public sub_groups; // Contains the list of sub-groups and their right
 
+    /**
+    @dev used to claim a contract, this will normally be a constructor outside the demo context
+    **/
     function claimContract(string memory _ens_name_master) external {
         contract_master = msg.sender;
         ens_name_master = _ens_name_master;
@@ -54,6 +57,9 @@ contract Intermediate {
         _;
     }
 
+    /**
+    @dev make sure that the sub-groups has enough funds to make a withdraw
+    **/
     modifier withdrawVerification(string memory _ens_address, uint256 _requested_amount) {
         // First of all, reset the remains balance
         if (sub_groups[_ens_address].allowance_delay == AllowanceDelays.EVERY_24_HOURS
@@ -90,6 +96,9 @@ contract Intermediate {
 
     //------------------------------------------SETTERS FUNCTION PART---------------------------------------------------
 
+    /**
+    @dev add a user to a subgroups
+    **/
     function pushAddressToSubGroups(string memory _ens_address, address _user_address)
     external isOwner {
         uint256 members_length = sub_groups[_ens_address].members.length;
@@ -108,6 +117,9 @@ contract Intermediate {
 
     //------------------------------------------UTILITY FUNCTION PART---------------------------------------------------
 
+    /**
+    @dev create a new subgroups with default values
+    **/
     function createSubGroup(
         string memory _subgroup_ens_address,
         uint256 _interval_allowance,
@@ -125,6 +137,9 @@ contract Intermediate {
         });
     }
 
+    /**
+    @dev manage a specific subgroups but updating some parameters
+    **/
     function updateSubGroup(string memory _subgroup_address, uint256 _interval_allowance, AllowanceDelays _allowance_delay)
     external isOwner {
         require(sub_groups[_subgroup_address].last_claim_date != 0, "Error: The subgroup does not exist.");
@@ -138,6 +153,9 @@ contract Intermediate {
         }
     }
 
+    /**
+    @dev Remove a user from a subgroups
+    **/
     function removeAddressFromSubGroups(string memory _ens_address, address _user_address)
     external isOwner isMemberOfGroups(_ens_address, _user_address) {
         uint256 members_length = sub_groups[_ens_address].members.length;
@@ -156,7 +174,9 @@ contract Intermediate {
 
     //------------------------------------------GROUPS FUNCTION PART----------------------------------------------------
 
-    // TODO: create a safe _msgSender()
+    /**
+    @dev This function is used by the owner of the organisation to add some budget to a specific pole
+    **/
     function addFounds(string memory _ens_address, uint256 _amount)
     external isOwner checkAllowance(_amount) {
         usdc_erc_20.transferFrom(msg.sender, address(this), _amount);
@@ -164,6 +184,9 @@ contract Intermediate {
         sub_groups[_ens_address].balance_of += _amount;
     }
 
+    /**
+    @dev Members of a pole can use this to withdraw their allocated founds
+    **/
     function withDrawFounds(string memory _ens_address, uint256 _amount)
     external isMemberOfGroups(_ens_address, msg.sender) withdrawVerification(_ens_address, _amount) {
         sub_groups[_ens_address].last_claim_date = block.timestamp;
