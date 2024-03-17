@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useFlowContext } from 'src/contexts/flowContext';
+import {useUserContext} from "../../contexts/userContext";
+import {useGetUserOrganisationQuery} from "../../services/request/user";
+import {useAddUserToGroupMutation} from "../../services/request/group";
+
+import { W3SSdk } from '@circle-fin/w3s-pw-web-sdk'
+
+let sdk: W3SSdk
 
 // Add People
 
@@ -8,16 +15,52 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
 
   const [name, setName] = useState('');
 
-  const handleSaveChanges = () => {
-    // Ici, vous pouvez appeler une API ou effectuer d'autres actions avec les valeurs de l'état
-    const newPerson = {
-        name: name, // Exemple statique, à rendre dynamique selon vos besoins
-        photoUrl: "https://noun.pics/"+ Math.floor(Math.random() * 1044) + ".svg" // TODO: SDK
-    };
-    addPeopleNode(someProp.id, newPerson);
+    const { userConnectResponse } = useUserContext();
+    const {data: userOrganisation } = useGetUserOrganisationQuery(undefined, {skip: !userConnectResponse});
+    const [triggerAddGroup] = useAddUserToGroupMutation();
 
-    closeModal();
-  };
+    const [waitingForChallenge, setWaitingForChallenge] = useState<boolean>(false);
+    const [challenge, setChallenge] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        sdk = new W3SSdk()
+    }, [])
+
+    const handleSaveChanges = async () => {
+        // Ici, vous pouvez appeler une API ou effectuer d'autres actions avec les valeurs de l'état
+
+
+          if (!userOrganisation) return;
+          const fetchRes = await triggerAddGroup({groupID: someProp.id, groupAddress: '0x1e6754B227C6ae4B0ca61D82f79D60660737554a', targetID: name});
+          setChallenge((fetchRes as any).data.challengeID)
+
+        closeModal();
+    };
+
+    const finalize = async () => {
+        console.log(userConnectResponse)
+        console.log(challenge)
+        if (!userConnectResponse || !challenge) return
+
+        sdk.setAppSettings({ appId: '1d98a445-1573-50f8-a929-29a3bcb2ee17' })
+        sdk.setAuthentication({ userToken: userConnectResponse?.user.userToken, encryptionKey: userConnectResponse?.user.encryptionKey })
+
+        sdk.execute(challenge, (error, result) => {
+            if (error) {
+                console.error(`Error: ${error?.message ?? 'Error!'}`)
+                return
+            }
+            console.log(`Challenge: ${result?.type}, Status: ${result?.status}`)
+
+            const newPerson = {
+                name: name, // Exemple statique, à rendre dynamique selon vos besoins
+                photoUrl: "https://noun.pics/"+ Math.floor(Math.random() * 1044) + ".svg" // TODO: SDK
+            };
+            addPeopleNode(someProp.id, newPerson);
+
+            closeModal();
+        })
+    }
 
   return (
     <div className="bg-white rounded-lg border p-4 sm:p-6 lg:p-8">

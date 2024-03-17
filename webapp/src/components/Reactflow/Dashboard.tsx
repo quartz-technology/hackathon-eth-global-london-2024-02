@@ -24,26 +24,35 @@ export default function Dashboard() {
 
   const edgeTypes = useMemo(() => ({}), []);
 
+  async function processGroups(userOrganisation: any) {
+    let x = 0;
+
+    for (const group of userOrganisation.groups) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      addDepartment(group.name, 0, x);
+      x += 1;
+    }
+  }
+
   useEffect(() => {
-    if (!userOrganisation) return;
+    if (!userOrganisation || userOrganisation?.organisations.length === 0) return;
 
     setNodes([
       {
         id: 'master-node',
         type: 'master',
         position: { x: window.innerWidth / 2 - 50, y: 25 },
-        data: { label: userOrganisation.organisations[0].name, id: userOrganisation.organisations[0].id },
+        data: { label: userOrganisation.organisations[0]?.name, id: userOrganisation.organisations[0].id },
       },
     ]);
-  }, [userOrganisation]);
 
-  useEffect(() => {
     console.log(userOrganisation)
+    processGroups(userOrganisation)
   }, [userOrganisation]);
 
   return (
       <>
-      { !!userConnectResponse?.user || !nodes ?
+      { !!userConnectResponse?.user || !nodes || userOrganisation?.organisations.length !== 0 ?
   <div className='w-[72vw] h-[100vh] relative'>
 
     <ReactFlow

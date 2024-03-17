@@ -45,6 +45,6 @@ interface Group {
   }
   
   export interface GroupIDParam {
-    groupID: string;
+    groupID: number;
   }
   
