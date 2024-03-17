@@ -27,6 +27,7 @@ router.post(
   async (req, res, next) => {
     const name = req.body.name;
 
+    console.debug(`Looking for user ${name}`)
     let userID: string;
     try {
       const res = await ctx.prisma.user.findFirst({ where: { name: name } });
@@ -39,6 +40,7 @@ router.post(
       return next(new Error("could not find user in database.", { cause: error }));
     }
 
+    console.debug(`Connecting to user ${userID}`)
     let session: Session;
     // Connect to an existing user on Circle API
     try {
@@ -84,6 +86,7 @@ router.post(
   async (req, res, next) => {
     const name = req.body.name;
 
+    console.debug(`Creating user ${name}`)
     // Create a new user on Circle API
     let circleUser: CircleUser;
     try {
@@ -92,6 +95,7 @@ router.post(
       return next(new Error("could not create user.", { cause: error }));
     }
 
+    console.debug(`Saving user ${name} to the database`)
     try {
       // Save the user to the database
       const user = await ctx.prisma.user.create({

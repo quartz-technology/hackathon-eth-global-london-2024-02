@@ -35,12 +35,14 @@ router.post(
       return next(new Error("field organisationID is missing from URL."));
     }
 
+    console.debug(`Looking for organisation ${organisationID}`)
     try {
       const organisation = await ctx.prisma.organisation.findFirst({ where: { id: Number(organisationID) } });
       if (!organisation?.id) {
         return next(new Error(`organisation ${organisationID} not found.`));
       }
 
+      console.debug(`Adding user ${username} to organisation ${organisation.name}`)
       await ctx.prisma.organisation.update({
         where: { id: organisation.id },
         data: { users: { connect: [{ name: username }] } },
@@ -78,6 +80,7 @@ router.post(
 
     const walletAddress = req.session.walletAddress as string;
 
+    console.debug(`Checking if organisation name ${ensName} is available`)
     // Check if ENS domain is available
     try {
       const isNameAvailable = await ctx.ensSDK.isENSAvailable(ensName);
@@ -88,6 +91,7 @@ router.post(
       return next(new Error("could not check if organisation name is available.", { cause: error }));
     }
 
+    console.debug(`Registering organisation name ${ensName} with wallet ${walletAddress}`)
     // Register the subdomain
     try {
       await ctx.ensSDK.registerENSAddress(name, walletAddress);
@@ -95,6 +99,7 @@ router.post(
       return next(new Error("could not register organisation name.", { cause: error }));
     }
 
+    console.debug(`Creating organisation ${name} in the contract`)
     let challengeID: string;
     try {
       challengeID = await ctx.contractSDK.ownContract(
@@ -110,9 +115,9 @@ router.post(
       return next(new Error("could not transfer contract ownership.", { cause: error }));
     }
 
+    console.debug(`Creating organisation ${name} in the database`)
     try {
       const organisation = await ctx.prisma.organisation.create({
-        // TODO: replace address by real one
         data: { name: name, address: ensName, users: { connect: [{ id: req.session.userID }] } },
       });
 

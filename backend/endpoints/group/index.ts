@@ -33,6 +33,7 @@ router.post(
     const { name, organisationID, allocation } = req.body;
     const walletAddress = req.session.walletAddress as string;
 
+    console.debug(`Looking for organiosation ${organisationID}`)
     let organisation: Organisation | null;
     try {
       organisation = await ctx.prisma.organisation.findFirst({ where: { id: organisationID } });
@@ -44,7 +45,9 @@ router.post(
     }
 
     const ensName = ctx.ensSDK.addBudalSuffix(`${name}.${organisation.name}`);
+    console.debug(`Creating ENS domain ${ensName}`)
 
+    console.debug(`Checking if ENS domain ${ensName} is available`)
     // Check if ENS domain is available
     try {
       const isNameAvailable = await ctx.ensSDK.isENSAvailable(ensName);
@@ -55,6 +58,7 @@ router.post(
       return next(new Error("could not check if organisation name is available.", { cause: error }));
     }
 
+    console.debug(`Registering ENS domain ${ensName}`)
     // Register the subdomain
     try {
       await ctx.ensSDK.registerENSAddress(name, walletAddress, organisation.name);
@@ -62,6 +66,7 @@ router.post(
       return next(new Error("could not register the group name.", { cause: error }));
     }
 
+    console.debug(`Creating group ${name} in organisation ${organisation.name} in the contract`)
     let challengeID: string;
     try {
       challengeID = await ctx.contractSDK.createGroup(
@@ -79,6 +84,7 @@ router.post(
       return next(new Error("could not create group on contract.", { cause: error }));
     }
 
+    console.debug("Creating group in the database")
     try {
       const group = await ctx.prisma.group.create({
         data: {
@@ -127,6 +133,7 @@ router.post(
       return next(new Error("field groupID is missing from URL."));
     }
 
+    console.debug(`Looking for group ${targetID} wallet`)
     let targetWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>;
     try {
       targetWallet = await ctx.circleSDK.getUserWallet(targetID);
@@ -134,6 +141,7 @@ router.post(
       return next(new Error("could not retrieve user target wallets.", { cause: error }));
     }
 
+    console.debug(`Adding user ${targetID} to group ${groupAddress} in the contract`)
     let challengeID: string;
     try {
       challengeID = await ctx.contractSDK.addUserToGroup(
@@ -150,6 +158,7 @@ router.post(
       return next(new Error("could not add user to group on contract.", { cause: error }));
     }
 
+    console.debug(`Adding user ${targetID} to group ${groupID} in the database`)
     try {
       const group = await ctx.prisma.group.findFirst({ where: { id: Number(groupID) } });
       if (!group?.id) {

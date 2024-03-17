@@ -66,7 +66,7 @@ export default class EnsSDK {
         parentName = parent + ".budal.eth"
       }
 
-      console.log(namehash(parentName), name, walletAddress, 0, 0, ENS_RESOLVER, ENS_EXPIRATION,)
+      console.log(parentName, namehash(parentName), name, walletAddress, 0, 0, ENS_RESOLVER, ENS_EXPIRATION,)
 
       await contract.write.setSubnodeRecord([namehash("budal.eth"), name, walletAddress, ENS_RESOLVER, 0, 0, ENS_EXPIRATION]);
     } catch (error) {
