@@ -22,3 +22,8 @@ export interface AddUserToGroupOptions {
   groupAddress: string;
   userAddress: string;
 }
+
+export interface AddFoundOptions {
+  groupAddress: string;
+  amount: number;
+}

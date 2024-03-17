@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { CircleAPIBaseURL } from "@service/circle/constants";
 import type {
+  AddFoundOptions,
   AddUserToGroupOptions,
   ContractCaller,
   CreateGroupOptions,
@@ -113,6 +114,19 @@ export default class ContractSDK {
       return challengeID;
     } catch (error) {
       throw new Error("call to addUserToGroup(address) failed", { cause: error });
+    }
+  }
+
+  async addFound(caller: ContractCaller, opts: AddFoundOptions) {
+    try {
+      const challengeID = await this.execute(caller, {
+        ABIFunctionSignature: "addFound(address, uint256)",
+        ABIParameters: [opts.groupAddress, opts.amount],
+      });
+
+      return challengeID;
+    } catch (error) {
+      throw new Error("call to addFound(address, string) failed", { cause: error });
     }
   }
 
