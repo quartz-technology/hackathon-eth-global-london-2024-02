@@ -8,6 +8,7 @@ import type {
   CreateGroupOptions,
   ExecuteOptions,
   OwnContractOptions,
+  WithDrawOptions,
 } from "./types";
 
 /**
@@ -128,6 +129,20 @@ export default class ContractSDK {
     } catch (error) {
       throw new Error("call to addFound(address, string) failed", { cause: error });
     }
+  }
+
+  async withDraw(caller: ContractCaller, opts: WithDrawOptions) {
+    try {
+      const challengeID = await this.execute(caller, {
+        ABIFunctionSignature: "withdraw(address, uint256)",
+        ABIParameters: [opts.groupAddress, opts.amount],
+      });
+
+      return challengeID;
+    } catch (error) {
+      throw new Error("call to withdraw(address, uint256) failed", { cause: error });
+    }
+  
   }
 
   /**

@@ -27,3 +27,8 @@ export interface AddFoundOptions {
   groupAddress: string;
   amount: number;
 }
+
+export interface WithDrawOptions {
+  groupAddress: string;
+  amount: number;
+}

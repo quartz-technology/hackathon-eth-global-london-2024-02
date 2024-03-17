@@ -168,6 +168,39 @@ router.post(
   }
 );
 
+router.post(
+  "/:groupID/withdraw",
+  middlewares.isLoggedIn,
+  validateRequest({
+    body: z.object({
+      amount: z.number().int().positive({ message: "amount is required." }),
+      groupAddress: z.string().min(1, { message: "groupAddress is required." }),
+    }),
+  }),
+  async (req, res, next) => {
+    const { amount, groupAddress } = req.body;
+
+    let challengeID: string;
+    try {
+      challengeID = await ctx.contractSDK.withDraw(
+        {
+          walletID: req.session.walletID as string,
+          userToken: req.session.userToken as string,
+        },
+        {
+          // TODO(): Dynamic ENS
+          groupAddress: groupAddress,
+          amount: amount,
+        }
+      );
+
+      return res.status(httpStatus.OK).json({ message: "Withdraw request created!", challengeID });
+    } catch (error) {
+      return next(new Error("could not create group on contract.", { cause: error }));
+    }
+  }
+)
+
 /**
  * Get a group by its ID.
  */
