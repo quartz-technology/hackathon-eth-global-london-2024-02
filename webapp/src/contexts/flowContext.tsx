@@ -10,7 +10,7 @@ interface FlowStateContext {
   edges: Edge[];
   setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
   onEdgesChange: any;
-  addDepartment: (label: string, allocatedBudget: number, index?: number) => void;
+  addDepartment: (label: string, allocatedBudget: number, index?: number, id?: number) => void;
   addPeopleNode: (departmentId: string, peopleData: { name: string; photoUrl: string }) => void;
 }
 
@@ -28,8 +28,8 @@ export const FlowProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const addDepartment = (label: string, allocatedBudget: number, index?: number) => {
-    const newNodeId = `department-${Math.random().toString(36).substr(2, 9)}`;
+  const addDepartment = (label: string, allocatedBudget: number, index?: number, id?: number) => {
+    const newNodeId = `department-${id ?? Math.random().toString(36).substr(2, 9)}`;
     const departmentIndex = index ?? nodes.filter(node => node.type === "department").length;
 
     const newNode: Node = {
