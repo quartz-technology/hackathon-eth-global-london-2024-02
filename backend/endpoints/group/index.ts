@@ -186,7 +186,6 @@ router.post(
           userToken: req.session.userToken as string,
         },
         {
-          // TODO(): Dynamic ENS
           groupAddress: groupAddress,
           amount: amount,
         }
