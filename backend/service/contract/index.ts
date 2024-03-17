@@ -10,6 +10,12 @@ import type {
 } from "./types";
 
 const CONTRACT_ADDRESS = "0x80F2b980eeCAF31e8f9d2c9DDf7cdD565830E530";
+
+/**
+ * The SDK for interacting with the contract.
+ *
+ * This is a wraper aimed at simplifying the interaction with the contract.
+ */
 export default class ContractSDK {
   private readonly apiKey: string;
 
@@ -79,13 +85,13 @@ export default class ContractSDK {
   async createGroup(caller: ContractCaller, opts: CreateGroupOptions) {
     try {
       const challengeID = await this.execute(caller, {
-        ABIFunctionSignature: "createSubGroup(address[], address, uint256, uint8)",
-        ABIParameters: [opts.members, opts.groupAddress, opts.allocation, opts.delays],
+        ABIFunctionSignature: "createSubGroup(address, uint256, uint8)",
+        ABIParameters: [ opts.groupAddress, opts.allocation, opts.delays],
       });
 
       return challengeID;
     } catch (error) {
-      throw new Error("call to createSubGroup(address[], address, uint256, uint8) failed", { cause: error });
+      throw new Error("call to createSubGroup(address, uint256, uint8) failed", { cause: error });
     }
   }
 
@@ -97,7 +103,6 @@ export default class ContractSDK {
    * @returns The challenge ID to verify
    */
   async addUserToGroup(caller: ContractCaller, opts: AddUserToGroupOptions) {
-    console.debug("Add user to group", caller.walletID, opts);
     try {
       const challengeID = await this.execute(caller, {
         ABIFunctionSignature: "pushAddressToSubGroups(address, address)",

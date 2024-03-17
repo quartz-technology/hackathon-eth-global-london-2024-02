@@ -39,7 +39,6 @@ router.post(
           userToken: req.session.userToken as string,
         },
         {
-          members: [],
           // TODO(): Dynamic ENS
           groupAddress: "0x1e6754B227C6ae4B0ca61D82f79D60660737554a",
           allocation: allocation,

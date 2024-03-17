@@ -13,7 +13,6 @@ export interface OwnContractOptions {
 }
 
 export interface CreateGroupOptions {
-  members: string[];
   groupAddress: string;
   allocation: number;
   delays: number;
