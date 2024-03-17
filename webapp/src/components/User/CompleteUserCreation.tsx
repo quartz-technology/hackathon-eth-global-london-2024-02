@@ -37,7 +37,7 @@ export default function CompleteUserCreation() {
 						<div className="mb-4">
 							Name: {!!userResponse && userResponse.user.name}
 						</div>
-						<div className="flex items-center justify-between">
+						<div className="flex items-center justify-center">
 							<button
 								className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
 								onClick={async () => { await onSubmit()}}

@@ -33,16 +33,18 @@ export default function CompleteOrganisationCreation() {
 			{!!organisation && <div className="w-full max-w-xs">
 			<div className='flex flex-col items-center justify-cente'>
     				<div className='h-10 w-0 mx-auto border-r-4 border-dashed border-blue-300'/>
-					<div className="mb-4">
+					<div className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+						<div className="mb-4">
 						Name: {!!organisation && organisation.organisation.name}
 					</div>
-					<div className="flex items-center justify-between">
+					<div className="flex items-center justify-center">
 						<button
 							className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
 							onClick={async () => { await onSubmit()}}
 						>
 							Verify
 						</button>
+					</div>
 					</div>
 				</div>
 			</div>}
