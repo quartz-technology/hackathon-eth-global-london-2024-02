@@ -74,6 +74,9 @@ router.post(
     const { name } = req.body;
     const ensName = ctx.ensSDK.addBudalSuffix(name);
 
+    const walletAddress = req.session.walletAddress as string;
+
+    // Check if ENS domain is available
     try {
       const isNameAvailable = await ctx.ensSDK.isENSAvailable(ensName);
       if (!isNameAvailable) {
@@ -81,6 +84,13 @@ router.post(
       }
     } catch (error) {
       return next(new Error("could not check if organisation name is available.", { cause: error }));
+    }
+
+    // Register the subdomain
+    try {
+      await ctx.ensSDK.registerENSAddress(name, walletAddress);
+    } catch (error) {
+      return next(new Error("could not register organisation name.", { cause: error }));
     }
 
     let challengeID: string;

@@ -90,6 +90,11 @@ router.post(
   async (req, res, next) => {
     const { targetID, groupAddress } = req.body;
 
+    const groupID = req.params.groupID;
+    if (!groupID) {
+      return next(new Error("field groupID is missing from URL."));
+    }
+
     let targetWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>;
     try {
       targetWallet = await ctx.circleSDK.getUserWallet(targetID);
@@ -113,11 +118,6 @@ router.post(
       return next(new Error("could not add user to group on contract.", { cause: error }));
     }
 
-    const groupID = req.params.groupID;
-    if (!groupID) {
-      return next(new Error("field groupID is missing from request body."));
-    }
-
     try {
       const group = await ctx.prisma.group.findFirst({ where: { id: Number(groupID) } });
       if (!group?.id) {
@@ -126,7 +126,7 @@ router.post(
 
       await ctx.prisma.group.update({
         where: { id: group.id },
-        data: { users: { connect: [{ id: req.session.userID }] } },
+        data: { users: { connect: [{ id: targetID }] } },
       });
 
       return res.status(httpStatus.OK).json({ message: "User joined group!", group, challengeID });
