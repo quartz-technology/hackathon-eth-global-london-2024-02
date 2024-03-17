@@ -1,28 +1,17 @@
 import { Router } from "express";
 import bodyParser from "body-parser";
+import httpStatus from "http-status";
 
 import ctx from "@context";
-import httpStatus from "http-status";
+import middlewares  from '@middlewares';
 
 const router = Router();
 
 /**
  * Create a new group in the organisation.
  */
-router.post("", bodyParser.json(), async (req, res, next) => {
-  const { name, userID, userToken, organisationID, allocation } = req.body;
-  if (!name) {
-    return next(new Error("field name is missing from request body."));
-  }
-
-  if (!userID) {
-    return next(new Error("field userID is missing from request body."));
-  }
-
-  if (!userToken) {
-    return next(new Error("field userToken is missing from request body."));
-  }
-
+router.post("", middlewares.isLoggedIn, bodyParser.json(), async (req, res, next) => {
+  const { name, organisationID, allocation } = req.body;
   if (!organisationID) {
     return next(new Error("field organisationID is missing from request body."));
   }
@@ -31,29 +20,11 @@ router.post("", bodyParser.json(), async (req, res, next) => {
     return next(new Error("field allocation is missing from request body."));
   }
 
-  let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
-  try {
-    const wallets = await ctx.circleSDK.getUserWallet(userID);
-    if (wallets.length === 0) {
-      return next(new Error(`user ${userID} does not have a wallet.`));
-    }
-
-    const wallet = wallets[0];
-    if (wallet.state !== "LIVE") {
-      return next(new Error(`user ${userID} wallet is not active.`));
-    }
-
-    userWallet = wallet;
-  } catch (error) {
-    return next(new Error("could not retrieve user wallets.", { cause: error }));
-  }
-
   let challengeID: string
   try {
     challengeID = await ctx.contractSDK.createGroup({
-      walletID: userWallet.id,
-      userToken,
-      
+      walletID: req.session.walletID as string,
+      userToken: req.session.userToken as string,
     }, {
       members: [],
       // TODO(): Dynamic ENS
@@ -67,7 +38,7 @@ router.post("", bodyParser.json(), async (req, res, next) => {
 
   try {
     const group = await ctx.prisma.group.create({
-      data: { name: name, users: { connect: [{ id: userID }] }, organisation: { connect: { id: organisationID } } },
+      data: { name: name, users: { connect: [{ id: req.session.userID as string }] }, organisation: { connect: { id: organisationID } } },
     });
 
     return res.status(httpStatus.CREATED).json({ message: "Group created!", group, challengeID });
@@ -83,54 +54,19 @@ router.post("", bodyParser.json(), async (req, res, next) => {
  * in the group nor if he's part of the organisation.
  * This is something we would do in a real-world application though if we had more time.
  */
-router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
-    const { userID, userToken, targetID, groupAddress } = req.body;
-    if (!userID) {
-      return next(new Error("field userID is missing from request body."));
-    }
-
+router.post("/:groupID/add", middlewares.isLoggedIn, bodyParser.json(), async (req, res, next) => {
+    const { targetID, groupAddress } = req.body;
     if (!targetID) {
       return next(new Error("field targetID is missing from request body."));
-    }
-
-    if (!userToken) {
-      return next(new Error("field userToken is missing from request body."));
     }
 
     if (!groupAddress) {
       return next(new Error("field groupAddress is missing from request body."));
     }
 
-    let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
+    let targetWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>;
     try {
-      const wallets = await ctx.circleSDK.getUserWallet(userID);
-      if (wallets.length === 0) {
-        return next(new Error(`user ${userID} does not have a wallet.`));
-      }
-  
-      const wallet = wallets[0];
-      if (wallet.state !== "LIVE") {
-        return next(new Error(`user ${userID} wallet is not active.`));
-      }
-  
-      userWallet = wallet;
-    } catch (error) {
-      return next(new Error("could not retrieve user wallets.", { cause: error }));
-    }
-
-    let targetWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
-    try {
-      const wallets = await ctx.circleSDK.getUserWallet(targetID);
-      if (wallets.length === 0) {
-        return next(new Error(`user ${userID} does not have a wallet.`));
-      }
-  
-      const wallet = wallets[0];
-      if (wallet.state !== "LIVE") {
-        return next(new Error(`user ${userID} wallet is not active.`));
-      }
-  
-      targetWallet = wallet;
+      targetWallet = await ctx.circleSDK.getUserWallet(targetID);
     } catch (error) {
       return next(new Error("could not retrieve user target wallets.", { cause: error }));
     }
@@ -138,8 +74,8 @@ router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
     let challengeID: string
     try {
       challengeID = await ctx.contractSDK.addUserToGroup({
-        walletID: userWallet.id,
-        userToken,
+        walletID: req.session.walletID as string,
+        userToken: req.session.userToken as string,
         
       }, {
         groupAddress,
@@ -162,7 +98,7 @@ router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
 
       await ctx.prisma.group.update({
         where: { id: group.id },
-        data: { users: { connect: [{ id: userID }] } },
+        data: { users: { connect: [{ id: req.session.userID }] } },
       });
 
       return res.status(httpStatus.OK).json({ message: "User joined group!", group, challengeID });
@@ -174,7 +110,7 @@ router.post("/:groupID/add", bodyParser.json(), async (req, res, next) => {
 /**
  * Get a group by its ID.
  */
-router.get("/:groupID", async (req, res, next) => {
+router.get("/:groupID", middlewares.isLoggedIn, async (req, res, next) => {
   const groupID = req.params.groupID;
   if (!groupID) {
     return next(new Error("field groupID is missing from request body."));

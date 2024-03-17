@@ -171,10 +171,36 @@ export default class CircleUserSDK {
         throw new Error("could not retrieve user wallets.");
       }
 
-	  return res.data.wallets ?? []
+      if (res.data.wallets.length === 0) {
+        throw new Error(`user ${userID} does not have a wallet.`);
+      }
+
+      const wallet = res.data.wallets[0];
+  
+      if (wallet.state !== "LIVE") {
+        throw new Error(`user ${userID} wallet is not active.`);
+      }
+
+      return wallet
     } catch (error) {
       throw new Error("call to CircleAPI.getWallets failed.", { cause: error });
     }
+  }
+
+  async getUserChallenges(userToken: string) {
+    try {
+      const res = await this.client.listUserChallenges({
+        userToken
+    });
+      if (!res.data?.challenges) {
+        throw new Error("could not retrieve user challenges.");
+      }
+
+      return res.data.challenges;
+    } catch (error) {
+      throw new Error("call to CircleAPI.getChallenges failed.", { cause: error });
+    }
+  
   }
 
   /**

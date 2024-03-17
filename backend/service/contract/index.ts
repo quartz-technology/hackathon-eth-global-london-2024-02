@@ -40,6 +40,8 @@ export default class ContractSDK {
   }
 
   async execute(caller: ContractCaller, opts: ExecuteOptions) {
+    console.log(caller, opts)
+
     const url = `${CircleAPIBaseURL}/transactions/contractExecution`;
     const options = {
       method: "POST",

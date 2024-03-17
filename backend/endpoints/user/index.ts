@@ -42,19 +42,9 @@ router.post("/connect", bodyParser.json(), async (req, res, next) => {
     return next(new Error("could not connect to user.", { cause: error }));
   }
 
-  let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
+  let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>;
   try {
-    const wallets = await ctx.circleSDK.getUserWallet(userID);
-    if (wallets.length === 0) {
-      return next(new Error(`user ${userID} does not have a wallet.`));
-    }
-
-    const wallet = wallets[0];
-    if (wallet.state !== "LIVE") {
-      return next(new Error(`user ${userID} wallet is not active.`));
-    }
-
-    userWallet = wallet;
+    userWallet = await ctx.circleSDK.getUserWallet(userID);
   } catch (error) {
     return next(new Error("could not retrieve user wallets.", { cause: error }));
   }
@@ -133,12 +123,22 @@ router.get("", middlewares.isLoggedIn, async (req, res, next) => {
       return next(new Error(`user ${userID} not found.`));
     }
 
-    console.log(user)
-
     return res.status(httpStatus.OK).json({ user });
   } catch (error) {
     return next(new Error("could not get user.", { cause: error }));
   }
 });
 
+router.get("/challenge", middlewares.isLoggedIn, async (req, res, next) => {
+  const userToken = req.session.userToken as string;
+
+  try {
+    const challenges = await ctx.circleSDK.getUserChallenges(userToken);
+
+    return res.status(httpStatus.OK).json({ message: "User challenges!", challenges });
+  } catch (error) {
+    return next(new Error("could not create group on contract.", { cause: error }));
+  }
+
+})
 export default router;
