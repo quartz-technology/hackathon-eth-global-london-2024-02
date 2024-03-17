@@ -12,7 +12,7 @@ const mylogo = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuHBOvXVQS
 const navigation = [{ name: 'Dashboard', href: '/', icon: HomeIcon }];
 
 const teams = [{ name: 'Create Organisation', href: '/org', initial: 'C' },
-			   { name: 'Create User', href: '/user', initial: 'U' }, { name: 'TEMPORAIRE', href: '/tmp', initial: 'TMP' }];
+			   { name: 'Create User', href: '/user', initial: 'U' }];
 
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(' ');
@@ -253,7 +253,7 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 					<div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
 						<div className="flex gap-8 h-24 shrink-0 items-center">
 							<img className="h-16 w-auto rounded-2xl" src={mylogo} alt="Company logo" />
-							<h1 className="text-3xl font-bold text-gray-900">Bedal</h1>
+							<h1 className="text-3xl font-bold text-gray-900">Budal</h1>
 						</div>
 						<nav className="flex flex-1 flex-col">
 							<ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -342,7 +342,7 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 					<a href="#">
 						<img className="h-8 w-8 rounded-2xl bg-gray-50" src={mylogo} alt="" />
 					</a>
-					<h1 className=" font-bold text-gray-900">Bedal</h1>
+					<h1 className=" font-bold text-gray-900">Budal</h1>
 
 				</div>
 
