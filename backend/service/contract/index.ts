@@ -30,7 +30,7 @@ interface AddUserToGroupOptions {
   userAddress: string;
 }
 
-const CONTRACT_ADDRESS = "0x5c1A58163829C0036D0c3e68A7EA155E092683cf";
+const CONTRACT_ADDRESS = "0x80F2b980eeCAF31e8f9d2c9DDf7cdD565830E530";
 
 export default class ContractSDK {
   private readonly apiKey: string;
