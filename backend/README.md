@@ -6,7 +6,8 @@ The Budal API abstracts the logic of budget allocation using the [Circle API](ht
 
 ### Requirements
 
--  [Bun](https://bun.sh/): We use Bun runtime to run the code.
+- [Bun](https://bun.sh/): We use Bun runtime to run the code.
+- [Tsx]: The runner binary because Bun does not fully support express session. 
 
 ### Install dependencies
 
@@ -20,6 +21,8 @@ Budal requires a valid [Circle API Key](https://developers.circle.com/w3s/docs/c
 
 Please, copy the [`.env.example`](./.env.example) and replace the API key with yours.
 
+You'll also need to set the contract address in the `CONTRACT_ADDRESS` environment variable.
+
 ### Generate the Prisma client
 
 We use SQLite and Prisma to store persistent data, please generate the client before running Budal.
@@ -28,12 +31,18 @@ We use SQLite and Prisma to store persistent data, please generate the client be
 bunx prisma generate
 ```
 
+### Start the Redis server
+
+```
+./scripts/start-redis.sh
+```
+
 ### Run the backend
 
 Start the backend:
 
 ```shell
-bun run index.ts
+tsx index.ts
 ```
 
 ## Testing

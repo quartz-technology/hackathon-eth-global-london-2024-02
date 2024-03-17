@@ -10,7 +10,7 @@ export const isFetchBaseQueryErrorType = (err: FetchBaseQueryError | SerializedE
 	'status' in err;
 
 export const backendApi = createApi({
-	tagTypes: ['Organisation', 'User'],
+	tagTypes: ['Organisation', 'User', 'Group'],
 	reducerPath: 'backendApi',
 	baseQuery: apiBase,
 	endpoints: () => ({}),

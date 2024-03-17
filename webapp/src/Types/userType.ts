@@ -3,7 +3,7 @@ export type UserType = {
 	email: string;
 };
 
-type User = {
+export type User = {
   userID: string;
   name: string;
   userToken: string;
@@ -24,4 +24,30 @@ export type ConnectUserResponse = {
         userID: string;
 		name?: string;
     };
+};
+
+type Organisation = {
+  id: number;
+  name: string;
+};
+
+type Group = {
+  id: number;
+  name: string;
+};
+
+export type UserOrganisationResponse = {
+  organisations: Organisation[];
+  groups: Group[];
+};
+
+
+type Challenge = {
+  id: string;
+  type: string; // e.g., "2FA", "Email Verification"
+  status: string; // e.g., "Pending", "Completed"
+};
+
+export type UserChallengesResponse = {
+  challenges: Challenge[];
 };

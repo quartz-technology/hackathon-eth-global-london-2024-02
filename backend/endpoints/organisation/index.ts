@@ -1,8 +1,11 @@
 import { Router } from "express";
 import bodyParser from "body-parser";
+import { validateRequest } from "zod-express-middleware";
+import { z } from "zod";
+import httpStatus from "http-status";
 
 import ctx from "@context";
-import httpStatus from "http-status";
+import middlewares from "@middlewares";
 
 const router = Router();
 
@@ -15,33 +18,40 @@ const router = Router();
  *
  * We would also check if the users wallet is correctly setup in the Circle API.
  */
-router.post("/:organisationID/add", bodyParser.json(), async (req, res, next) => {
-  const { userID } = req.body;
-  if (!userID) {
-    return next(new Error("field userID is missing from request body."));
-  }
+router.post(
+  "/:organisationID/add",
+  middlewares.isLoggedIn,
+  bodyParser.json(),
+  validateRequest({
+    body: z.object({
+      username: z.string().min(1, { message: "username is required." }),
+    }),
+  }),
+  async (req, res, next) => {
+    const { username } = req.body;
 
-  const organisationID = req.params.organisationID;
-  if (!organisationID) {
-    return next(new Error("field organisationID is missing from URL."));
-  }
-
-  try {
-    const organisation = await ctx.prisma.organisation.findFirst({ where: { id: Number(organisationID) } });
-    if (!organisation?.id) {
-      return next(new Error(`organisation ${organisationID} not found.`));
+    const organisationID = req.params.organisationID;
+    if (!organisationID) {
+      return next(new Error("field organisationID is missing from URL."));
     }
 
-    await ctx.prisma.organisation.update({
-      where: { id: organisation.id },
-      data: { users: { connect: [{ id: userID }] } },
-    });
+    try {
+      const organisation = await ctx.prisma.organisation.findFirst({ where: { id: Number(organisationID) } });
+      if (!organisation?.id) {
+        return next(new Error(`organisation ${organisationID} not found.`));
+      }
 
-    return res.status(httpStatus.OK).json({ message: "User joined organisation!", organisation });
-  } catch (error) {
-    return next(new Error("could not join organisation.", { cause: error }));
+      await ctx.prisma.organisation.update({
+        where: { id: organisation.id },
+        data: { users: { connect: [{ name: username }] } },
+      });
+
+      return res.status(httpStatus.OK).json({ message: "User joined organisation!", organisation });
+    } catch (error) {
+      return next(new Error("could not join organisation.", { cause: error }));
+    }
   }
-});
+);
 
 /**
  * Create a new organisation.
@@ -51,67 +61,60 @@ router.post("/:organisationID/add", bodyParser.json(), async (req, res, next) =>
  *
  * The users shall also have a valid wallet on Circle API before performing this operation.
  */
-router.post("", bodyParser.json(), async (req, res, next) => {
-  const { name, userID, userToken } = req.body;
-  if (!name) {
-    return next(new Error("field name is missing from request body."));
-  }
+router.post(
+  "",
+  middlewares.isLoggedIn,
+  bodyParser.json(),
+  validateRequest({
+    body: z.object({
+      name: z.string().min(1, { message: "name is required." }),
+    }),
+  }),
+  async (req, res, next) => {
+    const { name } = req.body;
+    const ensName = ctx.ensSDK.addBudalSuffix(name);
 
-  if (!userID) {
-    return next(new Error("field userID is missing from request body."));
-  }
-
-  if (!userToken) {
-    return next(new Error("field userToken is missing from request body."));
-  }
-
-  let userWallet: Awaited<ReturnType<typeof ctx.circleSDK.getUserWallet>>[number];
-  try {
-    const wallets = await ctx.circleSDK.getUserWallet(userToken);
-    if (wallets.length === 0) {
-      return next(new Error(`user ${userID} does not have a wallet.`));
-    }
-
-    const wallet = wallets[0];
-    if (wallet.state !== "LIVE") {
-      return next(new Error(`user ${userID} wallet is not active.`));
-    }
-
-    userWallet = wallet;
-  } catch (error) {
-    return next(new Error("could not retrieve user wallets.", { cause: error }));
-  }
-
-  let challengeID: string;
-  try {
-    challengeID = await ctx.contractSDK.ownContract(
-      {
-        walletID: userWallet.id,
-        userToken: userToken,
-      },
-      {
-        walletAddress: userWallet.address,
+    try {
+      const isNameAvailable = await ctx.ensSDK.isENSAvailable(ensName);
+      if (!isNameAvailable) {
+        return next(new Error(`organisation name ${ensName} is not available.`));
       }
-    );
-  } catch (error) {
-    return next(new Error("could not transfer contract ownership.", { cause: error }));
-  }
+    } catch (error) {
+      return next(new Error("could not check if organisation name is available.", { cause: error }));
+    }
 
-  try {
-    const organisation = await ctx.prisma.organisation.create({
-      data: { name: name, users: { connect: [{ id: userID }] } },
-    });
+    let challengeID: string;
+    try {
+      challengeID = await ctx.contractSDK.ownContract(
+        {
+          walletID: req.session.walletID as string,
+          userToken: req.session.userToken as string,
+        },
+        {
+          walletAddress: req.session.walletAddress as string,
+        }
+      );
+    } catch (error) {
+      return next(new Error("could not transfer contract ownership.", { cause: error }));
+    }
 
-    return res.status(httpStatus.CREATED).json({ message: "Organisation created!", organisation, challengeID });
-  } catch (error) {
-    return next(new Error("could not create organisation.", { cause: error }));
+    try {
+      const organisation = await ctx.prisma.organisation.create({
+        // TODO: replace address by real one
+        data: { name: name, address: ensName, users: { connect: [{ id: req.session.userID }] } },
+      });
+
+      return res.status(httpStatus.CREATED).json({ message: "Organisation created!", organisation, challengeID });
+    } catch (error) {
+      return next(new Error("could not create organisation.", { cause: error }));
+    }
   }
-});
+);
 
 /**
  * Get an organisation by its ID.
  */
-router.get("/:organisationID", async (req, res, next) => {
+router.get("/:organisationID", middlewares.isLoggedIn, async (req, res, next) => {
   const organisationID = req.params.organisationID;
   if (!organisationID) {
     return next(new Error("field organisationID is missing from request body."));

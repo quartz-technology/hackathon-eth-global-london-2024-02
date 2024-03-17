@@ -4,13 +4,16 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { Handle, NodeProps, Position } from 'reactflow';
 import { useFlowContext } from 'src/contexts/flowContext';
 import { ModalType, useModalContext } from 'src/contexts/modalContext';
+import { UseUserClient } from 'src/hooks/user/userClient';
+import { useGetUserOrganisationQuery } from 'src/services/request/user';
 import { classNames } from 'src/utils/classnameJoin';
+import {id} from "postcss-selector-parser";
 
 interface MasterNodeProps extends NodeProps {
   data: {
     label: string;
     budget?: number;
-    remaining?: number;
+    id?: number;
   };
 }
 
@@ -28,7 +31,7 @@ const MasterNode: React.FC<MasterNodeProps> = ({data}) => {
               alt="Master-img"
               className="h-12 w-12 flex-none rounded-lg object-cover ring-1 ring-gray-900/10"
             />
-            <div className="text-sm  text-centerfont-medium leading-6 text-gray-900">Master</div>
+            <div className="text-sm  text-centerfont-medium leading-6 text-gray-900">{data.label}</div>
             <Menu as="div" className="relative ml-auto">
               <Menu.Button className="-m-2.5 block p-2.5 text-gray-400 hover:text-gray-500">
                 <span className="sr-only">Open options</span>
@@ -65,11 +68,20 @@ const MasterNode: React.FC<MasterNodeProps> = ({data}) => {
             </Menu>
           </div>
           <dl className=" divide-y divide-gray-100 px-6 py-4 text-sm leading-6 rounded-b-lg border-b-2 border-x-2 ">
-            <div className="flex justify-between ">
-              <dt className="text-gray-500">Number Department</dt>
-              <dd className="text-gray-700">
-                <span>{nodes.filter(node => node.id.includes("department")).length}</span>
-              </dd>
+            <div className="flex-col justify-between ">
+              <div className="flex justify-between">
+                <dt className="text-gray-500">Number Department</dt>
+                <dd className="text-gray-700">
+                  <span>{nodes.filter(node => node.id.includes("department")).length}</span>
+                </dd>
+              </div>
+
+              <div className="flex justify-between">
+                <dt className="text-gray-500">Org ID</dt>
+                <dd className="text-gray-700">
+                  <span>{data.id}</span>
+                </dd>
+              </div>
             </div>
 
           </dl>
