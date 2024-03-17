@@ -31,7 +31,8 @@ export default function CompleteOrganisationCreation() {
 	return (
 		<>
 			{!!organisation && <div className="w-full max-w-xs">
-				<div className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+			<div className='flex flex-col items-center justify-cente'>
+    				<div className='h-10 w-0 mx-auto border-r-4 border-dashed border-blue-300'/>
 					<div className="mb-4">
 						Name: {!!organisation && organisation.organisation.name}
 					</div>

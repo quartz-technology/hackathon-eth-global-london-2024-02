@@ -28,7 +28,7 @@ export default function CreateOrganisationForm() {
 
 	return (
 		<div className="w-full max-w-xs">
-			<div className="mb-4 rounded bg-white px-8 pb-8 pt-6 shadow-md">
+			<div className="rounded bg-white px-8 pb-8 pt-6 shadow-md">
 				<div className="mb-4">
 					<label className="mb-2 block text-sm font-bold text-gray-700" htmlFor="name">
 						Name
@@ -42,7 +42,7 @@ export default function CreateOrganisationForm() {
 						placeholder="Name"
 					/>
 				</div>
-				<div className="flex items-center justify-between">
+				<div className="flex items-center justify-center">
 					<button
 						className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
 						onClick={async () => { await submit() }}

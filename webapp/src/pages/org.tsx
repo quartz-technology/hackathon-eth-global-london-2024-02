@@ -9,8 +9,10 @@ export default function Org() {
 		<div className={'max-w-full'}>
 			<SideBar customSectionHeader={undefined}>
 				<h1 className="mt-12 text-center text-3xl font-semibold text-orange-600">Create an organisation</h1>
-				<CreateOrganisationForm />
-				<CompleteOrganisationCreation />
+				<div className={'flex flex-col max-w-full h-[85vh] justify-center items-center '}>
+					<CreateOrganisationForm />
+					<CompleteOrganisationCreation />
+				</div>
 			</SideBar>
 		</div>
 	);
