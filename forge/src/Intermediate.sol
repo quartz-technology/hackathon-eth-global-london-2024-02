@@ -21,7 +21,7 @@ contract Intermediate {
         AllowanceDelays allowance_delay;            // During how much time founds are lock between each withdraws
     }
 
-    IERC20 public usdc_erc_20 = IERC20(0xf08A50178dfcDe18524640EA6618a1f965821715); // Sepolia USDC
+    IERC20 public usdc_erc_20 = IERC20(0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238); // Sepolia USDC
 
     address public contract_master; // The owner of the organisation
     address public ens_name_master; // The base Ens of the organisation
@@ -35,7 +35,7 @@ contract Intermediate {
     //-------------------------------------------MODIFIER PART----------------------------------------------------------
 
     modifier isOwner() {
-        require(msg.sender != contract_master, "Error: You are not the organisation owner");
+        require(msg.sender == contract_master, "Error: You are not the organisation owner");
         _;
     }
 
@@ -50,7 +50,7 @@ contract Intermediate {
             }
         }
 
-        require(isMember = true, "Error: you are not members of this subgroups");
+        require(isMember, "Error: you are not members of this subgroups");
         _;
     }
 
@@ -67,8 +67,8 @@ contract Intermediate {
 
         // Is the subgroups has enough founds to make the transaction
         require(sub_groups[_ens_address].balance_of >= _requested_amount, "Error: your subgroups doesn't have enough founds.");
-        if (sub_groups[_ens_address].allowance_delay == AllowanceDelays.NONE) {
-        require(sub_groups[_ens_address].interval_remains_balance - _requested_amount >= 0, "Error: your subgroups reach the interval limits");
+        if (sub_groups[_ens_address].allowance_delay != AllowanceDelays.NONE) {
+            require(sub_groups[_ens_address].interval_remains_balance - _requested_amount >= 0, "Error: your subgroups reach the interval limits");
         }
         _;
     }
@@ -102,20 +102,21 @@ contract Intermediate {
             }
         }
 
-        require(isMember = false, "Error: This member is already in the groups");
+        require(!isMember, "Error: This member is already in the groups");
         sub_groups[_ens_address].members.push(_user_address);
     }
 
     //------------------------------------------UTILITY FUNCTION PART---------------------------------------------------
 
     function createSubGroup(
-        address[] calldata _members,
         address _subgroup_ens_address,
         uint256 _interval_allowance,
         AllowanceDelays _allowance_delay
     ) external isOwner {
+        address[] memory initial_members;
+
         sub_groups[_subgroup_ens_address] = SubGroupsStruct({
-            members: _members,
+            members: initial_members,
             last_claim_date: block.timestamp,
             balance_of: 0,
             interval_allowance: _interval_allowance,
@@ -160,7 +161,7 @@ contract Intermediate {
     external isOwner checkAllowance(_amount) {
         usdc_erc_20.transferFrom(msg.sender, address(this), _amount);
 
-        sub_groups[_ens_address].interval_allowance += _amount;
+        sub_groups[_ens_address].balance_of += _amount;
     }
 
     function withDrawFounds(address _ens_address, uint256 _amount)
