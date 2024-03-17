@@ -1,0 +1,25 @@
+export interface ContractCaller {
+  walletID: string;
+  userToken: string;
+}
+
+export type ExecuteOptions = {
+  ABIFunctionSignature: string;
+  ABIParameters: any[];
+};
+
+export interface OwnContractOptions {
+  walletAddress: string;
+}
+
+export interface CreateGroupOptions {
+  members: string[];
+  groupAddress: string;
+  allocation: number;
+  delays: number;
+}
+
+export interface AddUserToGroupOptions {
+  groupAddress: string;
+  userAddress: string;
+}

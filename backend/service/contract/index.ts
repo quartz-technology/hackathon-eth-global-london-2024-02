@@ -1,37 +1,15 @@
-import type { AxiosInstance } from "axios";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 import { CircleAPIBaseURL } from "@service/circle/constants";
-
-interface ContractCaller {
-  walletID: string;
-  userToken: string;
-}
-
-type ExecuteOptions = {
-  ABIFunctionSignature: string;
-  ABIParameters: any[];
-};
-
-interface OwnContractOptions {
-  walletAddress: string;
-}
-
-interface CreateGroupOptions {
-  members: string[];
-  groupAddress: string;
-  allocation: number;
-  delays: number;
-}
-
-interface AddUserToGroupOptions {
-  groupAddress: string;
-  userAddress: string;
-}
+import type {
+  AddUserToGroupOptions,
+  ContractCaller,
+  CreateGroupOptions,
+  ExecuteOptions,
+  OwnContractOptions,
+} from "./types";
 
 const CONTRACT_ADDRESS = "0x80F2b980eeCAF31e8f9d2c9DDf7cdD565830E530";
-
 export default class ContractSDK {
   private readonly apiKey: string;
 
@@ -40,7 +18,7 @@ export default class ContractSDK {
   }
 
   async execute(caller: ContractCaller, opts: ExecuteOptions) {
-    console.log(caller, opts)
+    console.log(caller, opts);
 
     const url = `${CircleAPIBaseURL}/transactions/contractExecution`;
     const options = {
@@ -93,7 +71,7 @@ export default class ContractSDK {
 
   /**
    * Create a group on the contract
-   * 
+   *
    * @param caller The user's wallet and token
    * @param opts Create group options
    * @returns The challenge ID to verify
@@ -113,13 +91,13 @@ export default class ContractSDK {
 
   /**
    * Add a user to a group on the contract
-   * 
+   *
    * @param caller The user's wallet and token
    * @param opts Add user to group options
    * @returns The challenge ID to verify
    */
   async addUserToGroup(caller: ContractCaller, opts: AddUserToGroupOptions) {
-    console.debug("Add user to group", caller.walletID, opts)
+    console.debug("Add user to group", caller.walletID, opts);
     try {
       const challengeID = await this.execute(caller, {
         ABIFunctionSignature: "pushAddressToSubGroups(address, address)",
