@@ -20,6 +20,8 @@ Budal requires a valid [Circle API Key](https://developers.circle.com/w3s/docs/c
 
 Please, copy the [`.env.example`](./.env.example) and replace the API key with yours.
 
+You'll also need to set the contract address in the `CONTRACT_ADDRESS` environment variable.
+
 ### Generate the Prisma client
 
 We use SQLite and Prisma to store persistent data, please generate the client before running Budal.
