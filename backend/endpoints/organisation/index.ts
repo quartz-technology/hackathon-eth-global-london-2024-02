@@ -24,11 +24,11 @@ router.post(
   bodyParser.json(),
   validateRequest({
     body: z.object({
-      userID: z.string().min(1, { message: "userID is required." }),
+      username: z.string().min(1, { message: "username is required." }),
     }),
   }),
   async (req, res, next) => {
-    const { userID } = req.body;
+    const { username } = req.body;
 
     const organisationID = req.params.organisationID;
     if (!organisationID) {
@@ -43,7 +43,7 @@ router.post(
 
       await ctx.prisma.organisation.update({
         where: { id: organisation.id },
-        data: { users: { connect: [{ id: userID }] } },
+        data: { users: { connect: [{ name: username }] } },
       });
 
       return res.status(httpStatus.OK).json({ message: "User joined organisation!", organisation });
@@ -72,6 +72,16 @@ router.post(
   }),
   async (req, res, next) => {
     const { name } = req.body;
+    const ensName = ctx.ensSDK.addBudalSuffix(name);
+
+    try {
+      const isNameAvailable = await ctx.ensSDK.isENSAvailable(ensName);
+      if (!isNameAvailable) {
+        return next(new Error(`organisation name ${ensName} is not available.`));
+      }
+    } catch (error) {
+      return next(new Error("could not check if organisation name is available.", { cause: error }));
+    }
 
     let challengeID: string;
     try {
@@ -90,7 +100,8 @@ router.post(
 
     try {
       const organisation = await ctx.prisma.organisation.create({
-        data: { name: name, users: { connect: [{ id: req.session.userID }] } },
+        // TODO: replace address by real one
+        data: { name: name, address: ensName, users: { connect: [{ id: req.session.userID }] } },
       });
 
       return res.status(httpStatus.CREATED).json({ message: "Organisation created!", organisation, challengeID });

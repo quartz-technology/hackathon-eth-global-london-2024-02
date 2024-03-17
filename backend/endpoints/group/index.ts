@@ -53,6 +53,7 @@ router.post(
       const group = await ctx.prisma.group.create({
         data: {
           name: name,
+          address: name,
           users: { connect: [{ id: req.session.userID as string }] },
           organisation: { connect: { id: organisationID } },
         },

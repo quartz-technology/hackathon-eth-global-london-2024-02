@@ -36,6 +36,8 @@
     "supertest": "^6.3.4",
     "ts-node": "^10.9.2",
     "uuid": "^9.0.1",
+    "viem": "^2.8.10",
+    "wagmi": "^2.5.7",
     "zod": "^3.22.4",
     "zod-express-middleware": "^1.4.0"
   }

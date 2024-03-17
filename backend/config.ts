@@ -5,6 +5,7 @@ interface Config {
     port: number;
     circleAPIKey: string
     contractAddress: string
+    privateKey: string
 }
 
 const port = Number(process.env.LISTENING_PORT) || 8080;
@@ -19,8 +20,14 @@ if (!contractAddress) {
     throw new Error("CONTRACT_ADDRESS is required in environment")
 }
 
+const privateKey = process.env.BUDAL_PRIVATE_KEY
+if (!privateKey) {
+    throw new Error("BUDAL_PRIVATE_KEY is required in environment")
+}
+
 export default {
     port,
     circleAPIKey,
-    contractAddress
+    contractAddress,
+    privateKey
 };
