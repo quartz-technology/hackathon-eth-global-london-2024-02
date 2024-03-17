@@ -50,7 +50,8 @@ export default class EnsSDK {
   }
 
   addBudalSuffix(name: string): string {
-    return `${name}.budal.eth`;
+    // REPLACE by budal but we actually block the pool for a strange reason
+    return `${name}.budol.eth`;
   }
 
   async registerENSAddress(name: string, walletAddress: string, parent?: string): Promise<void> {
@@ -61,9 +62,9 @@ export default class EnsSDK {
         client: this.wallet,
       });
 
-      let parentName = "budal.eth"
+      let parentName = "budol.eth"
       if (parent) {
-        parentName = parent + ".budal.eth"
+        parentName = parent + ".budol.eth"
       } else {
         walletAddress = this.wallet!.account!.address!
       }
