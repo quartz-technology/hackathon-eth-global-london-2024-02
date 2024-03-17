@@ -68,7 +68,7 @@ export default class EnsSDK {
 
       console.log(parentName, namehash(parentName), name, walletAddress, 0, 0, ENS_RESOLVER, ENS_EXPIRATION,)
 
-      await contract.write.setSubnodeRecord([namehash(parent), name, walletAddress, ENS_RESOLVER, 0, 0, ENS_EXPIRATION]);
+      await contract.write.setSubnodeRecord([namehash(parentName), name, walletAddress, ENS_RESOLVER, 0, 0, ENS_EXPIRATION]);
     } catch (error) {
       throw new Error("could not register ENS address", { cause: error });
     }
