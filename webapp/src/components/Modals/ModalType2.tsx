@@ -22,7 +22,7 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
 
     const { userConnectResponse } = useUserContext();
     const {data: userOrganisation } = useGetUserOrganisationQuery(undefined, {skip: !userConnectResponse});
-    const [triggerAddGroup] = useAddUserToGroupMutation();
+    const [triggerAddGroup, {isSuccess: addGroupSuccess}] = useAddUserToGroupMutation();
 
     const [triggerAddtoOrg, {isSuccess: orgaSuccess}] = useAddUserToOrganisationMutation();
 
@@ -38,12 +38,12 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
     const addUserToOrga = async () => {
         if (!userOrganisation) return;
 
-        // await triggerAddtoOrg({username: name, organisationID: userOrganisation.organisations[0].id});
+        await triggerAddtoOrg({username: name, organisationID: userOrganisation.organisations[0].id});
 
         const res = await triggerGetOrgaDetails({organisationID: userOrganisation.organisations[0].id});
         const scaping = (res as any).data.organisation.users.find((n: any) => n.name === name);
 
-        const fetchRes = await triggerAddGroup({groupID: someProp.id, groupAddress: '0x1e6754B227C6ae4B0ca61D82f79D60660737554a', targetID: scaping.id});
+        const fetchRes = await triggerAddGroup({groupID: parseInt(someProp.id.split('department-{')[1].replace("}", "")), groupAddress: groupName, targetID: scaping.id});
         setChallenge((fetchRes as any).data.challengeID)
     }
 
@@ -81,7 +81,7 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
 
   return (
       <>
-          {!orgaSuccess && <>
+          {!orgaSuccess && !addGroupSuccess && <>
               <div className="bg-white rounded-lg border p-4 sm:p-6 lg:p-8">
                   <div className="mb-4 border-b pb-2">
                       <h3 className="text-lg leading-6 font-medium text-gray-900">Configuration</h3>
@@ -127,6 +127,31 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
                           onClick={addUserToOrga}
                       >
                           Add people
+                      </button>
+                  </div>
+              </div>
+          </>}
+
+          {orgaSuccess && addGroupSuccess && <>
+              <div className="bg-white rounded-lg border p-4 sm:p-6 lg:p-8">
+                  <div className="mb-4 border-b pb-2">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900">Validation</h3>
+                  </div>
+
+                  <div className="mt-6 flex justify-end gap-3">
+                      <button
+                          type="button"
+                          className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          onClick={closeModal}
+                      >
+                          Cancel
+                      </button>
+                      <button
+                          type="button"
+                          className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          onClick={finalize}
+                      >
+                          Finalize
                       </button>
                   </div>
               </div>
