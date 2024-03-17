@@ -15,7 +15,7 @@ let sdk: W3SSdk
 // Add People
 
 const ModalType2 = ({ closeModal, someProp }: any) => {
-    const { addPeopleNode } = useFlowContext();
+    const { addPeopleNode, nodes } = useFlowContext();
 
     const [name, setName] = useState('');
     const [groupName, setGroupName] = useState('');
@@ -43,7 +43,9 @@ const ModalType2 = ({ closeModal, someProp }: any) => {
         const res = await triggerGetOrgaDetails({organisationID: userOrganisation.organisations[0].id});
         const scaping = (res as any).data.organisation.users.find((n: any) => n.name === name);
 
-        const fetchRes = await triggerAddGroup({groupID: parseInt(someProp.id.split('department-{')[1].replace("}", "")), groupAddress: groupName, targetID: scaping.id});
+        const departmentIndex = nodes.findIndex(node => node.id === someProp.id && node.type === "department");
+        console.log(departmentIndex)
+        const fetchRes = await triggerAddGroup({groupID: departmentIndex, groupAddress: groupName, targetID: scaping.id});
         setChallenge((fetchRes as any).data.challengeID)
     }
 
