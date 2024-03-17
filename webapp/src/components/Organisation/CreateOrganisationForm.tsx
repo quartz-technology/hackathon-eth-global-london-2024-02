@@ -19,7 +19,7 @@ export default function CreateOrganisationForm() {
 		}
 
 		if (!userConnectResponse) return;
-		const res = await trigger({ userID: userConnectResponse?.user.userID, name: name, userToken: userConnectResponse.user.userToken });
+		const res = await trigger({ name: name });
 		if (!setOrganisation) return;
 		setOrganisation((res as any).data)
 

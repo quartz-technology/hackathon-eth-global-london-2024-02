@@ -65,7 +65,7 @@ const SideBar = ({ children, customSectionHeader }: SideBarProps) => {
 
         } catch (error) {
             // You can add a toast for error here if you want
-            console.error('Failed to create user', error);
+            console.error('Failed to connect user', error);
         }
     };
 
